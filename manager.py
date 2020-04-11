@@ -5,6 +5,8 @@ import os
 config_name = os.environ.get('FLASK_CONFIG') or 'Dev'
 
 app = create_app(config_name)
+app.DEBUG=True
+app.jinja_env.auto_reload = True
 # 把 app 传给 Manager 对象
 manager = Manager(app)
 

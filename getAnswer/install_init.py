@@ -64,10 +64,13 @@ def init():
         {
             'name': '底部信息(支持html代码)',
             'code': 'footer',
-            'val': 'Power by PyFly'
+            'val': 'Power by Python Flask'
         },
     ]
     result = mongo.db.options.insert_many(options)
 
     with open(lock_file, 'w') as file:
         file.write('1')
+
+if __name__=="__main__":
+    init()
