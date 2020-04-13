@@ -2,6 +2,17 @@ from werkzeug.security import check_password_hash
 
 
 class User:
+    user = None
+    is_active = False
+    is_authenticated = True
+    is_anonymous = False
+
+    def __init__(self, user):
+        self.user = user
+        self.is_active = user['is_active']
+
+    def get_id(self):
+        return str(self.user['_id'])
 
     # 因为该方法不涉及类本身的属性，所以使用静态方法装饰器装饰它
     @staticmethod
