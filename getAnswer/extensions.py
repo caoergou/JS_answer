@@ -28,3 +28,7 @@ def user_load(user_id):
 def init_extensions(app):
     # 调用 PyMongo 类的 init_app 方法进行初始化
     mongo.init_app(app)
+    # 调用 init_app 方法注册 app
+    # 此方法的主要作用就是将 login_manager 本身赋值给 app.login_manager 属性
+    # 以便 app 能够使用其登录登出等功能
+    login_manager.init_app(app)

@@ -17,7 +17,6 @@ class Dev:
     MONGO_URI = "mongodb://127.0.0.1:27017/getAnswer"
 
 configs = {
-        'DEBUG':True,
         "FLASK_ENV":"development",
         'Dev': DevConfig,
         'Pro': ProConfig

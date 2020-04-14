@@ -9,6 +9,10 @@ from ..extensions import mongo
 from .. import utils
 
 from ..forms import RegisterForm, LoginForm
+from flask_login import login_user, logout_user
+from random import randint
+from werkzeug import generate_password_hash
+
 
 # 创建蓝图，第一个参数为自定义，供前端使用，第二个参数为固定写法
 # 第三个参数为 URL 前缀
@@ -45,8 +49,6 @@ def home():
 
 
 
-
-
 @user_view.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -69,10 +71,12 @@ def login():
             return jsonify({'status': 50000, 'msg': '密码错误'})
         if not user.get('is_active'):
             return jsonify({'status': 443, 'msg': '账号未激活'})
-        # 通过验证后，把用户名添加到 session
-        session['username'] = user['username']
+         # 验证通过后，使用 login_user 方法替换 session 实现登录状态
+        # session['username'] = user['username']
+        login_user(User(user))
         # redirect 用于重定向到网站首页
         # url_for 用于构造 URL ，参数为字符串：蓝图.视图函数
+        # print(session['username'])
         return redirect(url_for('bbs_index.index'))
         return '<h1>登录成功</h1>'
     ver_code = utils.gen_verify_num()
@@ -83,6 +87,7 @@ def login():
 @user_view.route('/logout', methods=['GET', 'POST'])
 def logout():
     # 只需要执行 logout_user 方法即可，十分便捷
+    print("???")
     logout_user()
     # 重定向到首页
     return redirect(url_for('bbs_index.index'))
@@ -92,8 +97,10 @@ def logout():
 def register():
     form = RegisterForm()
     # 当用户提交后，执行 if 语句块中的内容
+    
     if form.is_submitted():
         # 如果没有通过注册表单类中定义的验证，返回错误信息
+        print(form.password.data,type(form.password.data),form.repeat_password.data,type(form.repeat_password.data))
         if not form.validate():
             return jsonify({'status': 50001, 'msy': str(form.errors)})
         # 处理验证问题，如果出现异常，捕获并返回 404
@@ -106,7 +113,7 @@ def register():
         if user:
             return jsonify({'status': 50000, 'msg': '该邮箱已经注册'})
         # 创建注册用户的基本信息
-        user = {'is_active': False,
+        user = {'is_active': True,
                 'coin': 0,
                 'email': form.email.data,
                 'username': form.username.data,
@@ -118,7 +125,13 @@ def register():
                 'created_at': datetime.utcnow()
         }
         mongo.db.users.insert_one(user)
-        return redirect(url_for('.login'))
+        print('按理来说应该要跳转了')
+        print(url_for('user.login'))
+        # return redirect(url_for('user.login'))
+        # return redirect(url_for('bbs_index.index'))
+        return redirect("http://127.0.0.1/user/login")
+
+        return '<h1>注册成功</h1>'
     ver_code = utils.gen_verify_num()
     return render_template('user/register.html', ver_code=ver_code['question'],
         form=form)

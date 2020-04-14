@@ -16,9 +16,9 @@ def init():
         'username': 'admin',
         'password': generate_password_hash('admin'),
         'is_admin': True,
-        'renzheng': '社区管理员',
-        'vip': 5,
-        'coin': 99999,
+        'renzheng': '管理员',
+        'level': 5,
+        'coin': 233,
         'avatar': '/static/images/avatar/1.jpg',
         'is_active': True,
         'create_at': datetime.utcnow(),
@@ -29,17 +29,17 @@ def init():
         {
             'name': '网站标题',
             'code': 'title',
-            'val': 'PyFly'
+            'val': '汲识问答'
         },
         {
             'name': '网站描述',
             'code': 'description',
-            'val': 'PyFly'
+            'val': '上海理工大学线上教学问答平台'
         },
         {
             'name': '网站关键字',
             'code': 'keywords',
-            'val': 'PyFly'
+            'val': '上海理工大学 线上 问答 教学'
         },
         {
             'name': '网站Logo',
@@ -59,7 +59,7 @@ def init():
         {
             'name': '管理员邮箱(申请友链链接用到)',
             'code': 'email',
-            'val': '981764793@qq.com'
+            'val': '1395762792@qq.com'
         },
         {
             'name': '底部信息(支持html代码)',

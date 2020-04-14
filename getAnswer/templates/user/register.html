@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}注册 - 汲识问答{% endblock %}
 
 {% block body %}
   <div class="layui-container fly-marginTop">
@@ -14,7 +14,7 @@
           <div class="layui-tab-item layui-show">
             <div class="layui-form layui-form-pane">
               <form method="post" action="/user/register">
-                {#  {{ form.csrf_token }}  #}
+                {{ form.csrf_token }}   <!-- 会自动校验csrf -->
                 <div class="layui-form-item">
                   <label for="L_email" class="layui-form-label">邮箱</label>
                   <div class="layui-input-inline">
@@ -25,7 +25,7 @@
                 <div class="layui-form-item">
                   <label for="L_username" class="layui-form-label">昵称</label>
                   <div class="layui-input-inline">
-                    <input type="text" id="L_username" name="username" required lay-verify="required" autocomplete="off" class="layui-input">
+                    <input type="text" id="L_username" name="username" required lay-verify="required" placeholder="好的名字可以人更容易记住你" autocomplete="off" class="layui-input">
                   </div>
                 </div>
                 <div class="layui-form-item">
@@ -38,7 +38,7 @@
                 <div class="layui-form-item">
                   <label for="L_repass" class="layui-form-label">确认密码</label>
                   <div class="layui-input-inline">
-                    <input type="password" id="L_repass" name="re_password" required lay-verify="required" autocomplete="off" class="layui-input">
+                    <input type="password" id="L_repass" name="repeat_password" required lay-verify="required" autocomplete="off" class="layui-input">
                   </div>
                 </div>
                 <div class="layui-form-item">
@@ -47,7 +47,7 @@
                     <input type="number" id="L_vercode" name="vercode" required lay-verify="required" placeholder="请回答后面的问题" autocomplete="off" class="layui-input">
                   </div>
                   <div class="layui-form-mid">
-                    <span style="color: #c00;">验证码</span>
+                    <span style="color: #c00;">{{ver_code}}</span>
                   </div>
                 </div>
                 <div class="layui-form-item">
