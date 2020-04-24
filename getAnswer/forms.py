@@ -24,3 +24,16 @@ class LoginForm(FlaskForm):
     password = PasswordField(validators=[DataRequired('密码不能为空'),
             Length(5, 26, '密码长度为 5 ~ 26 个字符')])
     vercode = StringField(validators=[InputRequired('答案写错了')])
+
+from wtforms import StringField, PasswordField, IntegerField
+
+
+class PostForm(FlaskForm):
+    '''帖子表单类'''
+
+    id = StringField()
+    title = StringField(validators=[DataRequired('提问标题不能为空')])
+    content = StringField(validators=[DataRequired('提问内容不能为空')])
+    catalog_id = StringField(validators=[DataRequired('提问主题不能为空')])
+    reward = IntegerField(validators=[InputRequired('问题悬赏不能不选')])
+    vercode = StringField(validators=[InputRequired('验证码不能为空')])

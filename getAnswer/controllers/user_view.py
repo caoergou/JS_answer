@@ -1,17 +1,16 @@
-# import sys
-# sys.path.append("..") #把上级目录加入到变量中
 import json
-from ..models import User
 from bson import ObjectId
 from datetime import datetime
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session
-from ..extensions import mongo
-from .. import utils
-
-from ..forms import RegisterForm, LoginForm
-from flask_login import login_user, logout_user
+from werkzeug.security import generate_password_hash
 from random import randint
-from werkzeug import generate_password_hash
+from flask import (Blueprint, render_template, request, jsonify, url_for, 
+        session, redirect)
+from flask_login import login_user, logout_user
+
+from ..extensions import mongo
+from ..models import User
+from .. import utils
+from ..forms import RegisterForm, LoginForm
 
 
 # 创建蓝图，第一个参数为自定义，供前端使用，第二个参数为固定写法
@@ -34,7 +33,6 @@ class MyEncoder(json.JSONEncoder):
             return o.isoformat()
         # 否则调用父类的同名方法触发 TypeError 异常
         super().default(o)
-
 
 
 @user_view.route('/')
@@ -71,36 +69,31 @@ def login():
             return jsonify({'status': 50000, 'msg': '密码错误'})
         if not user.get('is_active'):
             return jsonify({'status': 443, 'msg': '账号未激活'})
-         # 验证通过后，使用 login_user 方法替换 session 实现登录状态
-        # session['username'] = user['username']
+        # 验证通过后，使用 login_user 方法替换 session 实现登录状态
         login_user(User(user))
         # redirect 用于重定向到网站首页
         # url_for 用于构造 URL ，参数为字符串：蓝图.视图函数
-        # print(session['username'])
         return redirect(url_for('bbs_index.index'))
         return '<h1>登录成功</h1>'
     ver_code = utils.gen_verify_num()
     return render_template('user/login.html', ver_code=ver_code['question'],
             form=form)
 
+
 # 定义登出函数
 @user_view.route('/logout', methods=['GET', 'POST'])
 def logout():
     # 只需要执行 logout_user 方法即可，十分便捷
-    print("???")
     logout_user()
     # 重定向到首页
     return redirect(url_for('bbs_index.index'))
-
 
 @user_view.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
     # 当用户提交后，执行 if 语句块中的内容
-    
     if form.is_submitted():
         # 如果没有通过注册表单类中定义的验证，返回错误信息
-        print(form.password.data,type(form.password.data),form.repeat_password.data,type(form.repeat_password.data))
         if not form.validate():
             return jsonify({'status': 50001, 'msy': str(form.errors)})
         # 处理验证问题，如果出现异常，捕获并返回 404
@@ -113,25 +106,25 @@ def register():
         if user:
             return jsonify({'status': 50000, 'msg': '该邮箱已经注册'})
         # 创建注册用户的基本信息
-        user = {'is_active': True,
+        user = {'is_active': False,
                 'coin': 0,
                 'email': form.email.data,
                 'username': form.username.data,
                 'vip': 0,
                 'reply_count': 0,
-                'avatar': url_for('static',
+                'avatar': url_for('static', 
                     filename='images/avatar/{}.jpg'.format(randint(0, 12))),
                 'password': generate_password_hash(form.password.data),
                 'created_at': datetime.utcnow()
         }
         mongo.db.users.insert_one(user)
-        print('按理来说应该要跳转了')
-        print(url_for('user.login'))
-        # return redirect(url_for('user.login'))
-        # return redirect(url_for('bbs_index.index'))
-        return redirect("http://127.0.0.1/user/login")
+        return redirect(url_for('.login'))
+    ver_code = utils.gen_verify_num()
+    return render_template('user/register.html', ver_code=ver_code['question'],
+        form=form)
 
-        return '<h1>注册成功</h1>'
+    
+
     ver_code = utils.gen_verify_num()
     return render_template('user/register.html', ver_code=ver_code['question'],
         form=form)

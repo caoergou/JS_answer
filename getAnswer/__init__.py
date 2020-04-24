@@ -22,14 +22,19 @@ from .install_init import init as install_init
 from .extensions import init_extensions
 from flask_wtf.csrf import CSRFProtect
 from .custom_functions import init_func  # 新增代码
+from getAnswer import flask_objectid_converter
 
 def create_app(config):
     app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'PyFLy123'
+    app.url_map.converters['ObjectId'] = flask_objectid_converter.ObjectIDConverter
     app.config.from_object(configs.get(config))
     csrf=CSRFProtect(app)  #调用csrf保护web程序
     init_extensions(app)
     config_blueprints(app)
-    app.app_context().push()  # 推送应用上下文环境
-    install_init()
-    init_func(app)    # 新增代码
+    init_func(app)    
+    with app.app_context():
+        install_init()
+    flask_objectid_converter.Base64ObjectIDConverter
+
     return app
