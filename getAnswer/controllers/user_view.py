@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash
 from random import randint
 from flask import (Blueprint, render_template, request, jsonify, url_for, 
         session, redirect)
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user,login_required
 
 from ..extensions import mongo
 from ..models import User
@@ -80,14 +80,6 @@ def login():
             form=form)
 
 
-# 定义登出函数
-@user_view.route('/logout', methods=['GET', 'POST'])
-def logout():
-    # 只需要执行 logout_user 方法即可，十分便捷
-    logout_user()
-    # 重定向到首页
-    return redirect(url_for('bbs_index.index'))
-
 @user_view.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -128,3 +120,21 @@ def register():
     ver_code = utils.gen_verify_num()
     return render_template('user/register.html', ver_code=ver_code['question'],
         form=form)
+
+# 定义登出函数
+@user_view.route('/logout', methods=['GET', 'POST'])
+@login_required
+def logout():
+    # 只需要执行 logout_user 方法即可，十分便捷
+    logout_user()
+    # 重定向到首页
+    return redirect(url_for('bbs_index.index'))
+
+
+@user_view.route('/<ObjectId:user_id>')
+@login_required
+def user_home(user_id):
+    '''用户主页'''
+    # 在数据库 user 集合中查找主键为 user_id 的数据
+    user = mongo.db.users.find_one_or_404({'_id': user_id})
+    return render_template('user/home.html', user=user)

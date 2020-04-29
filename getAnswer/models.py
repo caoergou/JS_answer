@@ -1,4 +1,6 @@
 from werkzeug.security import check_password_hash
+from json import JSONEncoder
+
 
 
 class User:
@@ -24,8 +26,8 @@ class User:
 
 
 class R(dict):
-#这个类是状态码类，包含成功和失败返回的状态码、信息、数据
-#该类继承于dict，即字典，是对字典功能进行了改良
+    #这个类是状态码类，包含成功和失败返回的状态码、信息、数据
+    #该类继承于dict，即字典，是对字典功能进行了改良
     @staticmethod
     def ok(msg=None, data=None):
         r = R()
@@ -52,8 +54,35 @@ class R(dict):
     def get_msg(self):
         return self.get('msg')
 
+
 class BaseResult(R):
     def __init__(self, code=0, msg='', data=None):
         self.put('status', code)
         self.put('msg', msg)
         self.put('data', data)
+
+
+class Page:
+    def __init__(self,
+                 pn,
+                 size,
+                 sort_by=None,
+                 filter1=None,
+                 result=None,
+                 has_more=False,
+                 page_count=0,
+                 total=0):
+        self.pn = pn
+        self.size = size
+        self.sort_by = sort_by
+        self.filter1 = filter1
+        self.result = result
+        self.has_more = has_more
+        self.page_count = page_count
+        self.total = total
+
+    def __repr__(self):
+        # 此处只是简单地返回一个 JSON 字符串
+        # 使用 JSONEncoder().encode 等同于使用 json.dumps
+        # 因为后者在源码中的实现也是调用了 JSONEncoder 类
+        return JSONEncoder().encode(self.__dict__)

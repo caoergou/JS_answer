@@ -26,7 +26,8 @@ from getAnswer import flask_objectid_converter
 
 def create_app(config):
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'PyFLy123'
+    app.config['SECRET_KEY'] = 'ergou'
+    app.config['JSON_AS_ASCII'] = False
     app.url_map.converters['ObjectId'] = flask_objectid_converter.ObjectIDConverter
     app.config.from_object(configs.get(config))
     csrf=CSRFProtect(app)  #调用csrf保护web程序
