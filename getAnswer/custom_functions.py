@@ -21,7 +21,7 @@ def mongo_date_str(date):
     return utc2local(date).strftime('%Y-%m-%d %H:%M') if date else ''
 
 
-def date_cal( num, is_add=True):
+def date_cal(num, is_add=True):
     d1=datetime.now()
     delta = timedelta(num)
     if is_add:

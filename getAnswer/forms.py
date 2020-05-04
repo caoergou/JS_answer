@@ -48,3 +48,22 @@ class ChangePassWordForm(FlaskForm):
             message=code_msg.PASSWORD_LENGTH_ERROR.get_msg())])
     repassword = PasswordField(validators=[EqualTo('password',
             code_msg.PASSWORD_REPEAT_ERROR.get_msg())])
+
+class SendForgetMailForm(FlaskForm):
+    email = StringField(validators=[DataRequired(
+            code_msg.EMAIL_EMPTY.get_msg())])
+    vercode = StringField(validators=[InputRequired(
+            code_msg.VERIFY_CODE_ERROR.get_msg())])
+
+
+class ForgetPasswordForm(FlaskForm):
+    email = StringField(validators=[DataRequired(
+            code_msg.EMAIL_EMPTY.get_msg())])
+    code = StringField(validators=[DataRequired(
+            code_msg.VERIFY_CODE_ERROR.get_msg())])
+    vercode = StringField(validators=[InputRequired(
+            code_msg.VERIFY_CODE_ERROR.get_msg())])
+    password = PasswordField(validators=[Length(min=6, max=16,
+            message=code_msg.PASSWORD_LENGTH_ERROR.get_msg())])
+    repassword = PasswordField(validators=[EqualTo('password',
+            code_msg.PASSWORD_REPEAT_ERROR.get_msg())])
