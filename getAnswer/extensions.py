@@ -2,9 +2,21 @@ from flask_pymongo import PyMongo
 from flask_login import LoginManager
 from bson import ObjectId
 from .models import User
+from flask_uploads import UploadSet, configure_uploads, IMAGES, ALL
+
 
 # 实例化一个 PyMongo 类
 mongo = PyMongo()
+
+
+# 实例化图片上传对象，extensions 参数代表允许扩展名
+upload_photos = UploadSet(extensions=ALL)
+
+def init_extensions(app):
+    # 省略部分代码
+
+    # 获取配置信息并存储在 app 上
+    configure_uploads(app, upload_photos)
 
 
 # 创建 LoginManager 类的实例

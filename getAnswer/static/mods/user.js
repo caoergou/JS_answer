@@ -272,6 +272,7 @@ layui.define(['laypage', 'fly', 'element', 'flow'], function(exports){
       ,shade: 0.1
     }, function(){
       location.reload();
+      //修改完成后立即刷新界面
     });
   }
 

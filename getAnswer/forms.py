@@ -2,6 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import (DataRequired, Email, EqualTo, Length,
         InputRequired)
+from wtforms import StringField, PasswordField, IntegerField
+from . import code_msg
 
 
 class RegisterForm(FlaskForm):
@@ -25,7 +27,7 @@ class LoginForm(FlaskForm):
             Length(5, 26, '密码长度为 5 ~ 26 个字符')])
     vercode = StringField(validators=[InputRequired('答案写错了')])
 
-from wtforms import StringField, PasswordField, IntegerField
+
 
 
 class PostForm(FlaskForm):
@@ -37,3 +39,12 @@ class PostForm(FlaskForm):
     catalog_id = StringField(validators=[DataRequired('提问主题不能为空')])
     reward = IntegerField(validators=[InputRequired('问题悬赏不能不选')])
     vercode = StringField(validators=[InputRequired('验证码不能为空')])
+    
+
+class ChangePassWordForm(FlaskForm):
+    nowpassword = StringField(validators=[DataRequired(
+            code_msg.NOW_PASSWORD_EMPTY.get_msg())])
+    password = PasswordField(validators=[Length(min=6, max=16,
+            message=code_msg.PASSWORD_LENGTH_ERROR.get_msg())])
+    repassword = PasswordField(validators=[EqualTo('password',
+            code_msg.PASSWORD_REPEAT_ERROR.get_msg())])

@@ -38,25 +38,25 @@
                 {% endif %}
                 <img src="{{ current_user.user.avatar }}">
               </a>
-              <!-- dl class="layui-nav-child">
-                <dd><a href="{#{ url_for('user.user_set') }#}">
+              <dl class="layui-nav-child">
+                <dd><a href="{{ url_for('user.user_set') }}">
                   <i class="layui-icon">&#xe620;</i>基本设置</a>
                 </dd>
-                <dd><a href="{#{ url_for('user.user_message') }#}">
+                <dd><a href="{{ url_for('user.user_message') }}">
                   <i class="iconfont icon-tongzhi" style="top: 4px;"></i>我的消息</a>
                 </dd>
-                <dd><a href="{#{ url_for('user.user_home', user_id=current_user.user._id) }#}">
+                <dd><a href="{{ url_for('user.user_home', user_id=current_user.user._id) }}">
                   <i class="layui-icon" style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a>
                 </dd>
                 <hr style="margin: 5px 0;">
-                <dd><a href="{#{ url_for('user.logout') }#}" style="text-align: center;">退出</a></dd>
-              </dl -->
+                <dd><a href="{{ url_for('user.logout') }}" style="text-align: center;">退出</a></dd>
+              </dl>
             </li>
             {% if current_user.user.get('unread', 0) > 0 %}
               <li class="layui-nav-item">
-                <!-- a href="{#{ url_for('user.user_message') }#}">
+                <a href="{#{ url_for('user.user_message') }#}">
                   <span class="layui-badge">{#{ current_user.user.unread }#}</span>
-                </a -->
+                </a>
               </li>
             {% endif %}
           <!-- 如果没有登录，显示登录和注册按钮 -->

@@ -37,5 +37,4 @@ def create_app(config):
     with app.app_context():
         install_init()
     flask_objectid_converter.Base64ObjectIDConverter
-
     return app
