@@ -9,10 +9,11 @@ from flask_login import login_user, logout_user, login_required, current_user
 
 from ..extensions import mongo
 from .. import utils, db_utils, code_msg, forms, models
+from ..models import User
 
 # 创建蓝图，第一个参数为自定义，供前端使用，第二个参数为固定写法
 # 第三个参数为 URL 前缀
-user_view = Blueprint('user', __name__, url_prefix='/user')
+user_view = Blueprint("user", __name__, url_prefix="", template_folder="templates")
 
 
 class MyEncoder(json.JSONEncoder):
@@ -46,35 +47,29 @@ def home():
 
 @user_view.route('/login', methods=['GET', 'POST'])
 def login():
-    form = forms.LoginForm()
-    # 当用户提交后，执行 if 语句块中的内容
-    if form.is_submitted():
-        # 如果没有通过表单类中各个字段的验证，返回错误信息
-        if not form.validate():
-            return jsonify({'status': 50001, 'msg': str(form.errors)})
-        vercode = form.vercode.data     # 获取答案
-        try:
-            utils.verify_num(vercode)   # 验证答案
-        except Exception as e:
-            return '<h1>{}</h1>'.format(e), 404
-        # 从数据库中查询对应的用户数据
-        user = mongo.db.users.find_one({'email': form.email.data})
-        # 进行对应字段的验证
+    user_form = forms.LoginForm()
+    if user_form.is_submitted():
+        if not user_form.validate():
+            return jsonify(models.R.fail(code_msg.PARAM_ERROR.get_msg(), str(user_form.errors)))
+        utils.verify_num(user_form.vercode.data)
+        user = mongo.db.users.find_one({'email': user_form.email.data})
         if not user:
-            return jsonify({'status': 50102, 'msg': '用户不存在'})
-        if not User.validate_login(user['password'], form.password.data):
-            return jsonify({'status': 50000, 'msg': '密码错误'})
-        if not user.get('is_active'):
-            return jsonify({'status': 443, 'msg': '账号未激活'})
-        # 验证通过后，使用 login_user 方法替换 session 实现登录状态
-        login_user(User(user))
-        # redirect 用于重定向到网站首页
-        # url_for 用于构造 URL ，参数为字符串：蓝图.视图函数
-        return redirect(url_for('bbs_index.index'))
-        return '<h1>登录成功</h1>'
+            return jsonify(code_msg.USER_NOT_EXIST)
+        if not models.User.validate_login(user['password'], user_form.password.data):
+            return jsonify(code_msg.PASSWORD_ERROR)
+        if not user.get('is_active', False):
+            return jsonify(code_msg.USER_UN_ACTIVE)
+        if user.get('is_disabled', False):
+            return jsonify(code_msg.USER_DISABLED)
+        login_user(models.User(user))
+        action = request.values.get('next')
+        if not action:
+            action = url_for('bbs_index.index')
+        return jsonify(code_msg.LOGIN_SUCCESS.put('action', action))
+    logout_user()
     ver_code = utils.gen_verify_num()
-    return render_template('user/login.html', ver_code=ver_code['question'],
-            form=form)
+    # session['ver_code'] = ver_code['answer']
+    return render_template('user/login.html', ver_code=ver_code['question'], form=user_form, title='登录')
 
 
 
@@ -85,16 +80,14 @@ def register():
     if form.is_submitted():
         # 如果没有通过注册表单类中定义的验证，返回错误信息
         if not form.validate():
+            return jsonify(code_msg.PASSWORD_ERROR)
             return jsonify({'status': 50001, 'msy': str(form.errors)})
         # 处理验证问题，如果出现异常，捕获并返回 404
-        try:
-            utils.verify_num(form.vercode.data)
-        except Exception as e:
-            return '<h1>{}</h1>'.format(e), 404
+        utils.verify_num(form.vercode.data)
         # 这步用来验证邮箱是否已经被注册
         user = mongo.db.users.find_one({'email': form.email.data})
         if user:
-            return jsonify({'status': 50000, 'msg': '该邮箱已经注册'})
+            return jsonify(code_msg.EMAIL_EXIST)
         # 创建注册用户的基本信息
         user = {'is_active': False,
                 'coin': 0,
@@ -172,8 +165,7 @@ def user_pass_forget():
     mail_form = forms.SendForgetMailForm()
     if mail_form.is_submitted():
         if not mail_form.validate():
-            return jsonify(models.R.fail(code_msg.PARAM_ERROR.get_msg(),
-                    str(mail_form.errors)))
+            return jsonify(code_msg.PARAM_ERROR)
         email = mail_form.email.data
         ver_code = mail_form.vercode.data
         utils.verify_num(ver_code)
@@ -185,8 +177,10 @@ def user_pass_forget():
         # 发送忘记密码邮件
         send_active_email(user['username'], user_id=user['_id'],
                 email=email, is_forget=True)
-        return jsonify(code_msg.RE_PWD_MAIL_SEND.put('action',
-                url_for('user.login')))
+        action = request.values.get('next')
+        if not action:
+            action = url_for('user.login')
+        return jsonify(code_msg.RE_PWD_MAIL_SEND.put('action', action))
     has_code = False
     user = None
     # 用户点击重置密码链接访问时

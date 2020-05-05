@@ -3,7 +3,8 @@ from flask import session, current_app
 from flask_mail import Message
 from threading import Thread
 
-from . import extensions
+from . import extensions, models
+
 
 
 # 生成验证码
@@ -21,8 +22,10 @@ def gen_verify_num():
 
 # 验证码检验
 def verify_num(code):
-    if int(code) != int(session['ver_code']):
-        raise Exception('验证码错啦！')
+    from .code_msg import VERIFY_CODE_ERROR
+
+    if int(code) != session['ver_code']:
+        raise models.GlobalApiException(VERIFY_CODE_ERROR)
 
 
 # 设置接收者、发送内容等

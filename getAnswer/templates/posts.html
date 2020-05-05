@@ -18,11 +18,11 @@
     </ul>
     <div class="fly-column-right layui-hide-xs">
       <span class="fly-search"><i class="layui-icon"></i></span>
-      <a href="{{ url_for('index.add') }}" class="layui-btn">发表新帖</a>
+      <a href="{{ url_for('bbs_index.add') }}" class="layui-btn">发表新帖</a>
     </div>
     <div class="layui-hide-sm layui-show-xs-block"
          style="margin-top: -10px; padding-bottom: 10px; text-align: center;">
-      <a href="{{ url_for('index.add') }}" class="layui-btn">发表新帖</a>
+      <a href="{{ url_for('bbs_index.add') }}" class="layui-btn">发表新帖</a>
     </div>
   </div>
 </div>
@@ -45,6 +45,7 @@
 
       {% if current_user.is_authenticated %}
       <div class="fly-panel fly-signin">
+        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
         <div class="fly-panel-title">
           签到
           <i class="fly-mid"></i>

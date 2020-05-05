@@ -12,7 +12,7 @@ class DevConfig:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'caoergou')
 
     # 配置 CSRF 认证
-    WTF_CSRF_ENABLED = True
+    WTF_CSRF_ENABLED = False
 
     # 配置是否允许注册
     Open_Registration = True

@@ -86,3 +86,8 @@ class Page:
         # 使用 JSONEncoder().encode 等同于使用 json.dumps
         # 因为后者在源码中的实现也是调用了 JSONEncoder 类
         return JSONEncoder().encode(self.__dict__)
+
+class GlobalApiException(Exception):
+
+    def __init__(self, cm):
+        self.code_msg = cm

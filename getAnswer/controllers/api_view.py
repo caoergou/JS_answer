@@ -9,7 +9,7 @@ from .. import code_msg, models,db_utils
 import random
 
 
-api_view = Blueprint('api', __name__, url_prefix='/api')
+api_view = Blueprint("api", __name__, url_prefix="", template_folder="templates")
 
 
 @api_view.route('/post/delete/<ObjectId:post_id>', methods=['POST'])
@@ -29,7 +29,7 @@ def post_delete(post_id):
     # whoosh_searcher.delete_document('posts', 'obj_id', str(post_id))
     return jsonify(
         code_msg.DELETE_SUCCESS.put(
-            'action', url_for('index.index', catalog_id=post['catalog_id'])))
+            'action', url_for('index.index')))
 
 
 @api_view.route('/post/set/<ObjectId:post_id>/<string:field>/<int:val>',

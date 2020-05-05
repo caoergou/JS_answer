@@ -17,7 +17,7 @@
 from flask import Flask
 
 from .configs import configs
-from .controllers import config_blueprints
+from .controllers import config_blueprint
 from .install_init import init as install_init
 from .extensions import init_extensions
 from flask_wtf.csrf import CSRFProtect
@@ -32,7 +32,7 @@ def create_app(config):
     app.config.from_object(configs.get(config))
     csrf=CSRFProtect(app)  #调用csrf保护web程序
     init_extensions(app)
-    config_blueprints(app)
+    config_blueprint(app)
     init_func(app)    
     with app.app_context():
         install_init()

@@ -39,12 +39,14 @@ EMAIL_ERROR = R(status=50001, msg='邮箱格式不正确')
 EMAIL_EMPTY = R(status=50001, msg='邮箱不能为空')
 USERNAME_EMPTY = R(status=50001, msg='昵称不能为空')
 NOW_PASSWORD_EMPTY = R(status=50001, msg='两次输入的密码不一致')
+
 # 问答
 POST_TITLE_EMPTY = R(status=50001, msg='标题不能为空')
 POST_CONTENT_EMPTY = R(status=50001, msg='内容不能为空')
 POST_CATALOG_EMPTY = R(status=50001, msg='所属主题不能为空')
 POST_COIN_EMPTY = R(status=50001, msg='悬赏硬币不能为空')
 CATALOG_EMPTY = R(status=50001, msg='所属主题不能为空')
+
 # 文件
 FILE_EMPTY = R(status=50001, msg='没有上传任何文件')
 UPLOAD_UN_ALLOWED = R(status=50001, msg='不支持的文件格式')

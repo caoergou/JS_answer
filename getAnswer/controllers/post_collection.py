@@ -22,6 +22,8 @@ def collection_find(post_id=None):
     # 返回 {'collection': True 或 False }
     return jsonify(models.R.ok(data={'collection': is_collected}))
 
+
+
 @post_collection.route('/<string:action>/<ObjectId:post_id>', methods=['POST'])
 @login_required
 def collection(action, post_id):

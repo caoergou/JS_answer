@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, jsonify, url_for, request,redirect
-from flask_login import current_user
+from flask_login import current_user, login_required
 from bson import ObjectId
 from datetime import datetime
 from pymongo import DESCENDING
