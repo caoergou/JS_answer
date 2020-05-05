@@ -13,7 +13,7 @@ from ..models import User
 
 # 创建蓝图，第一个参数为自定义，供前端使用，第二个参数为固定写法
 # 第三个参数为 URL 前缀
-topic_view = Blueprint("topic", __name__, url_prefix="", template_folder="templates")
+topic_view = Blueprint("topic", __name__,  template_folder="templates")
 
 
 

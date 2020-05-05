@@ -12,8 +12,8 @@ from .. import utils, db_utils, code_msg, forms, models
 from ..models import User
 
 # 创建蓝图，第一个参数为自定义，供前端使用，第二个参数为固定写法
-# 第三个参数为 URL 前缀
-user_view = Blueprint("user", __name__, url_prefix="", template_folder="templates")
+# 第三个参数为 URL 前缀，可不写，直接在__init__.py文件中调用
+user_view = Blueprint("user", __name__,  template_folder="templates")
 
 
 class MyEncoder(json.JSONEncoder):
@@ -42,6 +42,12 @@ def home():
     # cls 参数用于处理特殊类型的数据
     # ensure_ascii=False 使得 JSON 字符串是 UTF-8 编码
     return json.dumps(users, cls=MyEncoder, ensure_ascii=False)
+
+
+@user_view.route('/<ObjectId:user_id>')
+def user_home(user_id):
+    user = mongo.db.users.find_one_or_404({'_id': user_id})
+    return render_template('user/home.html', user=user)
 
 
 
@@ -105,7 +111,10 @@ def register():
                 body='你已经成功注册了账号，同时完成了发送邮件功能！')
         # mongo.db.users.update_one({'username': form.username.data},
         #         {'$set': {'is_active': True}})
-        return redirect(url_for('.login'))
+        action = request.values.get('next')
+        if not action:
+            action = url_for('.login')
+        return jsonify(code_msg.REGISTER_SUCCESS.put('action', action))
     ver_code = utils.gen_verify_num()
     return render_template('user/register.html', ver_code=ver_code['question'],
             form=form)
@@ -251,13 +260,7 @@ def logout():
     return redirect(url_for('bbs_index.index'))
 
 
-@user_view.route('/<ObjectId:user_id>')
-@login_required
-def user_home(user_id):
-    '''用户主页'''
-    # 在数据库 user 集合中查找主键为 user_id 的数据
-    user = mongo.db.users.find_one_or_404({'_id': user_id})
-    return render_template('user/home.html', user=user)
+
 
 @user_view.route('/message')
 @user_view.route('/message/page/<int:pn>')

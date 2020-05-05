@@ -27,9 +27,13 @@ REGISTER_SUCCESS = R(status=0, msg='用户注册成功, 请前往您的注册邮
 LOGIN_SUCCESS = R(status=0, msg='登录成功')
 
 # 回答
+ADD_QUESTION_SUCCESS = R(status=0,msg='提问成功')
+ALTER_QUESTION_SUCCESS = R(status=0,msg='修改提问成功')
 HAD_ACCEPTED_ANSWER = R(status=50201, msg='已有被采纳回答')
 COMMENT_SUCCESS = R(status=0, msg='回答成功')
 DELETE_SUCCESS = R(status=0, msg='删除成功')
+
+
 
 # 参数校验相关 50001
 # 用户

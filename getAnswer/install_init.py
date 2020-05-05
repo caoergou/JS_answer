@@ -13,7 +13,7 @@ def init():
     # 创建管理员信息
     mongo.db.users.insert_one({
         'email': 'admin',
-        'username': 'admin',
+        'username': 'Eric@getanswer.xyz',
         'password': generate_password_hash('admin'),
         'is_admin': True,
         'renzheng': '管理员',

@@ -6,20 +6,19 @@
 <div class="layui-col-md8 content detail">
   <div class="fly-panel detail-box">
     <!-- 这里是提问的相关界面 -->
+    
     <h1>{{ post.title }}</h1>
     <div class="fly-detail-info">
-      <!-- <span class="layui-badge">审核中</span> -->
-      <span class="layui-badge layui-bg-green fly-detail-column">{{ post_catalog.name }}</span>
-      {% if post.is_closed %}
-      <span class="layui-badge" style="background-color: #5FB878;">已结</span>
-      {% else %}
-      <span class="layui-badge" style="background-color: #999;">未结</span>
-      {% endif %}
       {% if post.is_top %}
-      <span class="layui-badge layui-bg-black">置顶</span>
+      <span class="layui-badge layui-bg-blue">置顶</span>
       {% endif %}
-      {% if post.is_cream %}
-      <span class="layui-badge layui-bg-red">精帖</span>
+      {% if not post.is_closed %}
+      <span class="layui-badge layui-bg-blue" >悬赏 {{ post.get('reward', 0) }} 硬币</span>
+      {% endif %}
+      {% if post.is_closed %}
+      <span class="layui-badge layui-bg-blue">已结</span>
+      {% else %}
+      <span class="layui-badge-rim">未结</span>
       {% endif %}
       <div class="fly-admin-box" data-id="{{ post._id }}">
         {% if current_user.is_authenticated  and (post.user_id == current_user.user._id or
@@ -59,21 +58,22 @@
           {% if post.user.renzheng %}
           <i class="iconfont icon-renzheng">{{ post.user.renzheng }}</i>
           {% endif %}
-          {% if post.user.get('vip', 0) > 0 %}
-          <i class="layui-badge fly-badge-vip">VIP{{ post.user.vip }}</i>
-          {% endif %}
         </a>
         <span>{{ post.create_at|mongo_date_str }}</span>
       </div>
       <div class="detail-hits" id="LAY_jieAdmin" data-id="{{ post._id }}">
-        <span style="padding-right: 10px; color: #FF7200">悬赏：{{ post.get('reward', 0) }}硬币</span>
+        <a >{{ post.user.get('desc') or '这家伙懒得留下签名' }}</a>
         {% if current_user.is_authenticated and (post.user._id == current_user.user._id or current_user.user.is_admin) and not post.is_closed %}
         <span class="layui-btn layui-btn-xs jie-admin" type="edit"><a href="/edit/{{ post._id }}">编辑此贴</a></span>
         {% endif %}
       </div>
     </div>
-    <div class="detail-body photos">
+    <div class="detail-body img">
       {{ post.content }}
+    </div>
+    <hr>
+    <div class="fly-detail-topics">
+      <button class="layui-btn layui-btn-radius layui-btn-primary">{{ post_catalog.name }}</button>
     </div>
   </div>
 
@@ -157,7 +157,7 @@
 
 
     {% else %}
-    <div class="fly-panel detail-box" >
+    <div class="fly-panel detail-box">
       <div style="text-align: center">暂时还没有回答，开始写第一个答案吧
         <!-- <button class="layui-btn layui-btn-sm layui-btn-primary " alert="true" type="addone">写第一个答案</button> -->
       </div>

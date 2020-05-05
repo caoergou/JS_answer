@@ -7,7 +7,7 @@ from flask_login import current_user
 from bson.json_util import dumps
 
 
-post_collection = Blueprint("collection", __name__, url_prefix='/collection')
+post_collection = Blueprint("collection", __name__)
 
 #帖子收藏
 @post_collection.route('/find/<ObjectId:post_id>', methods=['POST'])

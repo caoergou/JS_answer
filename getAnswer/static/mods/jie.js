@@ -208,7 +208,7 @@ layui.define('fly', function (exports) {
           formType: 2
           , value: data
           , maxlength: 100000
-          , title: '编辑回帖'
+          , title: '编辑回答'
           , area: ['728px', '300px']
           , success: function (layero) {
             fly.layEditor({

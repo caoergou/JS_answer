@@ -45,14 +45,13 @@ def add(post_id=None):
         if form.reward.data > user_coin:
             msg = '悬赏金币不能大于拥有的金币，当前账号金币为：{}'.format(
                user_coin)
-            return jsonify(R.ok(msg=msg))
+            return jsonify(R.fail(code=50001,msg=msg))
         # 一条帖子
         post = {'title': form.title.data,
                 'catalog_id': ObjectId(form.catalog_id.data),
                 'is_closed': False,
                 'content': form.content.data
         }
-        msg = '发帖成功'
         reward = form.reward.data
         # 如果有这个参数，说明该帖子已经存在，现在是修改帖子的操作
         if post_id:
@@ -60,7 +59,7 @@ def add(post_id=None):
             post['modified_at'] = datetime.utcnow()
             # 更新帖子数据
             mongo.db.posts.update_one({'_id': post_id}, {'$set': post})
-            msg = '修改成功'
+            return jsonify(code_msg.ADD_QUESTION_SUCCESS.put('action', url_for('.post_detail',post_id=post_id)))
         # 否则，就是新建帖子的操作
         else:
             post['created_at'] = datetime.utcnow()
@@ -72,8 +71,8 @@ def add(post_id=None):
             # 将新建帖子的数据添加到数据库
             mongo.db.posts.insert_one(post)
             post_id = post['_id']
-        # 这里将 action 字段添加到字典中，以便传入 JS 代码中触发跳转
-        return jsonify(R.ok(msg).put('action', url_for('.index')))
+            # 这里将 action 字段添加到字典中，以便传入 JS 代码中触发跳转
+            return jsonify(code_msg.ALTER_QUESTION_SUCCESS.put('action', url_for('.post_detail',post_id=post_id)))
     # 如果是使用 GET 方法发送的请求
     ver_code = gen_verify_num()
     post = None
