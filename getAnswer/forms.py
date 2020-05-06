@@ -13,7 +13,7 @@ class RegisterForm(FlaskForm):
             Email('请输入正确的邮箱格式')])
     username = StringField(validators=[DataRequired('用户名不能为空')])
     password = PasswordField(validators=[DataRequired('密码不能为空'),
-            Length(5, 26, '密码长度为 5 ~ 26 个字符')])
+            Length(6, 26, '密码长度为 6 ~ 26 个字符')])
     repeat_password = PasswordField(validators=[
             EqualTo('password', '两次输入的密码不一致')])
     vercode = StringField(validators=[InputRequired('答案写错了')])
@@ -24,7 +24,7 @@ class LoginForm(FlaskForm):
 
     email = StringField(validators=[DataRequired('邮箱不能为空')])
     password = PasswordField(validators=[DataRequired('密码不能为空'),
-            Length(5, 26, '密码长度为 5 ~ 26 个字符')])
+            Length(6, 26, '密码长度为 6 ~ 26 个字符')])
     vercode = StringField(validators=[InputRequired('答案写错了')])
 
 
@@ -39,7 +39,17 @@ class PostForm(FlaskForm):
     catalog_id = StringField(validators=[DataRequired('提问主题不能为空')])
     reward = IntegerField(validators=[InputRequired('问题悬赏不能不选')])
     vercode = StringField(validators=[InputRequired('验证码不能为空')])
-    
+
+
+class CatalogForm(FlaskForm):
+    '''话题表单类'''
+
+    id = StringField()
+    title = StringField(validators=[DataRequired('话题名不能为空')])
+    description = StringField(validators=[DataRequired('话题说明不能为空')])
+    parent_id = StringField(validators=[DataRequired('父话题ID不能为空')])
+    catalog_admin = StringField(validators=[DataRequired('管理员邮箱不能为空')])
+    vercode = StringField(validators=[InputRequired('验证码不能为空')])
 
 class ChangePassWordForm(FlaskForm):
     nowpassword = StringField(validators=[DataRequired(

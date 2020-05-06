@@ -12,11 +12,11 @@ def init():
 
     # 创建管理员信息
     mongo.db.users.insert_one({
-        'email': 'admin',
-        'username': 'Eric@getanswer.xyz',
-        'password': generate_password_hash('admin'),
+        'email': 'Eric@getanswer.xyz',
+        'username': 'Eric',
+        'password': generate_password_hash('password'),
         'is_admin': True,
-        'renzheng': '管理员',
+        'renzheng': '汲识问答-管理员',
         'level': 5,
         'coin': 233,
         'avatar': '/static/images/avatar/1.jpg',

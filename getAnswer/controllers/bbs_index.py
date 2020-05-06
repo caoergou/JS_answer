@@ -6,7 +6,7 @@ from pymongo import DESCENDING
 
 
 from .. import code_msg
-from ..forms import PostForm
+from ..forms import PostForm,CatalogForm
 from ..models import R, BaseResult
 from ..utils import gen_verify_num, verify_num
 from ..extensions import mongo,whoosh_searcher
@@ -29,10 +29,7 @@ def add(post_id=None):
             # 这里调用 BaseResult 类的实例作为 jsonify 的参数
             return jsonify(BaseResult(1, str(form.errors)))
         # 对于人类操作的验证
-        try:
-            verify_num(form.vercode.data)
-        except Exception as e:
-            return '<h1>{}</h1>'.format(e), 404
+        verify_num(form.vercode.data)
         # current_user 就是 models.py 文件里的 User 类的实例
         # current_user.user 就是对应到 MongoDB 数据集合中的一条用户数据
         user = current_user.user
@@ -40,10 +37,10 @@ def add(post_id=None):
         # 后面的实验会使用邮箱验证来激活用户
         if not user.get('is_active'):
             return jsonify(code_msg.USER_UN_ACTIVE_OR_DISABLED)
-        # 金币的处理
+        # 硬币的处理
         user_coin = user.get('coin', 0)
         if form.reward.data > user_coin:
-            msg = '悬赏金币不能大于拥有的金币，当前账号金币为：{}'.format(
+            msg = '悬赏硬币不能大于拥有的硬币，当前账号硬币为：{}'.format(
                user_coin)
             return jsonify(R.fail(code=50001,msg=msg))
         # 一条帖子
@@ -65,7 +62,7 @@ def add(post_id=None):
             post['created_at'] = datetime.utcnow()
             post['reward'] = reward
             post['user_id'] = user['_id']
-            # 修改帖子作者的金币数量
+            # 修改帖子作者的硬币数量
             mongo.db.users.update_one({'_id': user['_id']},
                     {'$inc': {'coin': -reward}})
             # 将新建帖子的数据添加到数据库
@@ -106,11 +103,68 @@ def index(pn=1, size=10, catalog_id=None):
     # 增加问答类型
     if catalog_id:
         filter1['catalog_id'] = catalog_id
+        # post = mongo.db.posts.find_one_or_404({'_id': post_id})
     page = get_page('posts', pn=pn, filter1=filter1, size=size, sort_by=sort_by)
     return render_template("post_list.html", is_index=catalog_id is None,
             page=page, sort_key=sort_key, catalog_id=catalog_id,
             post_type=post_type)
 
+@bbs_index.route('/catalog/add/', methods=['GET', 'POST'])
+@bbs_index.route('/catalog/edit/<ObjectId:catalog_id>/', methods=['GET', 'POST'])
+def add_catalog(catalog_id=None):
+    form = CatalogForm()
+    # 如果表单已提交
+    if form.is_submitted():
+        # 如果没通过表单类中的验证
+        if not form.validate():
+            # 这里调用 BaseResult 类的实例作为 jsonify 的参数
+            return jsonify(BaseResult(1, str(form.errors)))
+        # 对于人类操作的验证
+        verify_num(form.vercode.data)
+        # current_user 就是 models.py 文件里的 User 类的实例
+        # current_user.user 就是对应到 MongoDB 数据集合中的一条用户数据
+        user = current_user.user
+        # 如果这个字段没有被赋值为 True ，说明用户还未激活
+        # 后面的实验会使用邮箱验证来激活用户
+        if not user.get('is_active'):
+            return jsonify(code_msg.USER_UN_ACTIVE_OR_DISABLED)
+        if not user.get('is_admin'):
+            return jsonify(code_msg.USER_UN_HAD_PERMISSION)
+        if form.parent_id.data :
+            parent_id = ObjectId(form.parent_id.data)
+        else:
+            parent_id = '#'
+        # 一个话题
+        catalog = {'title': form.title.data,
+                    'description':form.description.data,
+                'parent_id': ObjectId(form.catalog_id.data) ,
+                'catalog_admin': form.catalog_admin.data,
+        }
+        # 如果有这个参数，说明该话题已经存在，现在是修改话题的操作
+        if catalog_id:
+            # 增加一个“修改时间” 字段
+            catalog['modified_at'] = datetime.utcnow()
+            # 更新帖子数据
+            mongo.db.catalogs.update_one({'_id': catalog_id}, {'$set': catalog})
+            return jsonify(code_msg.ADD_QUESTION_SUCCESS.put('action', url_for('.index',post_id=post_id)))
+        # 否则，就是新建帖子的操作
+        else:
+            catalog['created_at'] = datetime.utcnow()
+            # 将新建话题的数据添加到数据库
+            mongo.db.catalogs.insert_one(catalog)
+            post_id = post['_id']
+            # 这里将 action 字段添加到字典中，以便传入 JS 代码中触发跳转
+            return jsonify(code_msg.ALTER_QUESTION_SUCCESS.put('action', url_for('.index',post_id=post_id)))
+    # 如果是使用 GET 方法发送的请求
+    ver_code = gen_verify_num()
+    post = None
+    title = '创建话题'
+    if catalog_id:
+        catalog = mongo.db.catalogs.find_one_or_404({'_id': catalog_id})
+        title = '编辑话题'
+    return render_template('jie/add.html', page_name='jie', form=form,
+            ver_code=ver_code['question'], is_add=(post_id is None), post=post,
+            title=title)
 
 @bbs_index.route('/post/<ObjectId:post_id>/')
 @bbs_index.route('/post/<ObjectId:post_id>/page/<int:pn>/')

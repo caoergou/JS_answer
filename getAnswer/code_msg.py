@@ -15,6 +15,7 @@ USER_UN_HAD_PERMISSION = R(status=403, msg='权限不足')
 
 # 用户相关
 CHANGE_PWD_SUCCESS = R(status=1, msg='密码修改成功')
+ALTER_USER_INF_SUCCESS = R(status=0, msg='信息修改成功')
 PASSWORD_ERROR = R(status=50101, msg='密码错误')
 USER_NOT_EXIST = R(status=50102, msg='用户不存在')
 CHANGE_PWD_FAIL = R(status=50103, msg='密码修改失败，请联系管理员')

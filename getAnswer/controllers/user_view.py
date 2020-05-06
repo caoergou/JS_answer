@@ -299,7 +299,5 @@ def user_set():
                 update_data[key] = data.get(key)
         mongo.db.users.update({'_id': current_user.user['_id']},
                 {'$set': update_data})
-        return jsonify('修改成功')
-    return render_template('user/set.html', user_page='set',
-            page_name='user', title='基本设置')
-
+        return jsonify(code_msg.ALTER_USER_INF_SUCCESS)
+    return render_template('user/set.html', user_page='set', page_name='user', title='基本设置')

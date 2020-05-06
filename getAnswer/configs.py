@@ -31,12 +31,13 @@ class DevConfig:
 
     # 邮箱相关配置
     # SERVER 和 PORT 是需要网上查的，各家的邮箱都不同
-    MAIL_SERVER = 'smtp.qq.com'
-    MAIL_PORT = 25
-    MAIL_USERNAME = '1395762792@qq.com' #os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD =  'stfdvefwarznhhgh' #os.environ.get('MAIL_PASSWORD')
+    MAIL_SERVER = 'smtp.exmail.qq.com'
+    MAIL_PORT = 465
+    MAIL_USERNAME = 'userverification@jswd.onexmail.com' #os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD =  'k7s98G4z4GQA2P2z' #os.environ.get('MAIL_PASSWORD')
     MAIL_SUBJECT_PREFIX = '[汲识问答]-'
     MAIL_DEBUG = True
+    MAIL_USE_SSL = True
     # 邮箱相关配置说明
     # MAIL_SERVER 配置了使用邮箱的服务器。
     # MAIL_PORT 配置了邮箱服务的端口。

@@ -6,8 +6,12 @@
     <img src="{{ item_user.avatar or '/static/images/avatar/1.jpg' }}" alt="{{ item_user.username }}">
   </a>
   <h2>
-    <a class="layui-badge">{{ item_catalog.name }}</a>
+    <a class="layui-badge layui-bg-blue" >{{ item_catalog.name }}</a>
+    {% if item.get('reward', 0) >0 %}
+    <a class="layui-badge" style="color:#1E9FFF;" >悬赏 {{ item.get('reward', 0) }} 硬币</a>
+    {% endif %}
     <a href="/post/{{ item._id }}">{{ item.title }}</a>
+    
   </h2>
   <div class="fly-list-info">
     <a href="/user/{{ item_user._id or 'none'}}" link>
@@ -15,14 +19,8 @@
       {% if item_user.renzheng %}
         <i class="iconfont icon-renzheng">{{ item_user.renzheng }}</i>
       {% endif %}
-      {% if item_user.get('vip', 0) > 0 %}
-        <i class="layui-badge fly-badge-vip">VIP{{ item_user.vip }}</i>
-      {% endif %}
     </a>
     <span>{{ item.create_at|mongo_date_str }}</span>
-    <span class="fly-list-kiss layui-hide-xs" title="悬赏金币">
-      <i class="iconfont icon-jifen"></i>{{ item.get('reward', 0) }}
-    </span>
     {% if item.is_closed %}
       <span class="layui-badge fly-badge-accept layui-hide-xs">已结</span>
     {% endif %}
