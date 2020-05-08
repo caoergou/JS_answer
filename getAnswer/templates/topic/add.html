@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
+
+{% block title %}
+新建话题
+{% endblock %}
+
 {% block body %}
 
 <div class="layui-container fly-marginTop">
@@ -17,66 +22,65 @@
                 <label for="L_title" class="layui-form-label">话题名称</label>
                 <div class="layui-input-block">
                   <input type="text" id="L_title" name="title" required lay-verify="required" autocomplete="off"
-                    placeholder="输入一个清晰明确的话题" class="layui-input" value="{{ catalog['title'] }}">
+                    placeholder="输入一个清晰明确的话题" class="layui-input" value="{{ topic['title'] }}">
                   <!-- <input type="hidden" name="id" value="{{post_id}}"> -->
                 </div>
               </div>
-              </div>
-              <div class="layui-form-item layui-form-text">
-                <div class="layui-input-block">
-                  <textarea id="L_content" name="content" required lay-verify="required" placeholder="详细描述"
-                    class="layui-textarea fly-editor" style="height: 260px;"
-                    >{{ catalog['description'] }}</textarea>
-                </div>
-              </div>
-              <div class="layui-form-item">
-                <label class="layui-form-label">父话题</label>
-                <div class="layui-input-block">
-                  <select lay-verify="required" name="catalog_id" {{ 'disabled' if post.is_closed }}>
-                    <option></option>
-                    {% for item in get_list('catalogs') %}
-                    <option value="{{ item._id }}" {{ 'selected' if post and post['catalog_id'] == item._id }}>
-                      {{ item.name }}</option>
-                    {% endfor %}
-
-                  </select>
-                </div>
-              </div>
-              <div class="layui-form-item">
-                <label for="L_vercode" class="layui-form-label">人类验证</label>
-                <div class="layui-input-inline">
-                  <input type="text" id="L_vercode" name="vercode" required lay-verify="required" placeholder="请回答后面的问题"
-                    autocomplete="off" class="layui-input" {{ 'disabled' if post.is_closed }}>
-                </div>
-                <div class="layui-form-mid">
-                  <span style="color: #c00;">{{ ver_code }}</span>
-                </div>
-              </div>
-              <div class="layui-form-item">
-                <button class="layui-btn" lay-filter="*" alert="true" lay-submit
-                  {{ 'disabled' if post.is_closed }}>立即发布</button> {{ '帖子已结不能修改' if post.is_closed  }}
-              </div>
-            </form>
           </div>
+          <div class="layui-form-item layui-form-text">
+            <div class="layui-input-block">
+              <textarea id="L_content" name="description" required lay-verify="required" placeholder="详细描述"
+                class="layui-textarea fly-editor" style="height: 260px;">{{ topic['description'] }}</textarea>
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">话题管理员</label>
+            <div class="layui-input-block">
+              <select lay-verify="required" name="topic_admin">
+                <option selected="selected" value="{{ user._id }}">{{user.username}} ({{user.email}})</option>
+                    {% for item in get_list('users') %}
+                    <option value=" {{ item._id }}"
+                  {{ 'selected' if topic and topic['topic_admin'] == item._id }}>{{item.username}} ({{item.email}})</option>
+                {% endfor %}
+
+              </select>
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">父话题</label>
+            <div class="layui-input-block">
+              <select lay-verify="required" name="parent_id">
+                <option></option>
+                {% for item in get_list('topics') %}
+                <option value="{{ item._id }}" {{ 'selected' if topic and topic['topic_id'] == item._id }}>
+                  {{ item.name }}</option>
+                {% endfor %}
+
+              </select>
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label for="L_vercode" class="layui-form-label">人类验证</label>
+            <div class="layui-input-inline">
+              <input type="text" id="L_vercode" name="vercode" required lay-verify="required" placeholder="请回答后面的问题"
+                autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid">
+              <span style="color: #c00;">{{ ver_code }}</span>
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <button class="layui-btn" lay-filter="*" alert="true" lay-submit>立即创建</button>
+          </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
 </div>
+</div>
 {% endblock %}
 
 
 {% block other_js %}
-{% if post['is_closed'] %}
-<script>
-  layui.use('layer', function () {
-    var layer = layui.layer;
-    layer.alert('帖子已结不能修改', {
-      end: function () {
-        location.href = '/'
-      }
-    });
-  })
-</script>
-{% endif %}
 {% endblock %}

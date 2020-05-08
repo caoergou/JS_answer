@@ -4,6 +4,7 @@ from .post_collection import post_collection
 from .api_view import api_view
 from .exception_view import exception_view
 from .topic_view import topic_view
+
 # 蓝本默认配置
 DEFAULT_BLUEPRINT = (
     # (蓝本，前缀)

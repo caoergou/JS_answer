@@ -34,7 +34,9 @@ HAD_ACCEPTED_ANSWER = R(status=50201, msg='已有被采纳回答')
 COMMENT_SUCCESS = R(status=0, msg='回答成功')
 DELETE_SUCCESS = R(status=0, msg='删除成功')
 
-
+# 话题
+ADD_topic_SUCCESS = R(status=0,msg='新建话题成功')
+ALTER_topic_SUCCESS = R(status=0,msg='修改话题成功')
 
 # 参数校验相关 50001
 # 用户
@@ -48,9 +50,9 @@ NOW_PASSWORD_EMPTY = R(status=50001, msg='两次输入的密码不一致')
 # 问答
 POST_TITLE_EMPTY = R(status=50001, msg='标题不能为空')
 POST_CONTENT_EMPTY = R(status=50001, msg='内容不能为空')
-POST_CATALOG_EMPTY = R(status=50001, msg='所属主题不能为空')
+POST_topic_EMPTY = R(status=50001, msg='所属主题不能为空')
 POST_COIN_EMPTY = R(status=50001, msg='悬赏硬币不能为空')
-CATALOG_EMPTY = R(status=50001, msg='所属主题不能为空')
+topic_EMPTY = R(status=50001, msg='所属主题不能为空')
 
 # 文件
 FILE_EMPTY = R(status=50001, msg='没有上传任何文件')

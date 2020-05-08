@@ -1,4 +1,8 @@
 {% extends 'user/user_base.html' %}
+
+{% block title %}
+{{user.username}} 设置
+{% endblock %}
 {% block content %}
   <div class="layui-tab layui-tab-brief" lay-filter="user">
       <ul class="layui-tab-title" id="LAY_mine">

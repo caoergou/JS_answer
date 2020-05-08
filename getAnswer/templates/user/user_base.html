@@ -9,22 +9,16 @@
         我的主页
       </a>
     </li>
-  {#<li class="layui-nav-item {{ 'layui-this' if user_page == 'posts' }}">
-      <a href="{{ url_for('user.user_posts') }}">
-        <i class="layui-icon">&#xe612;</i>
-        我的帖子
-      </a>
-    </li>#}
-    <li class="layui-nav-item {{ 'layui-this' if user_page == 'set' }}">
-      <a href="{{ url_for('user.user_set') }}">
-        <i class="layui-icon">&#xe620;</i>
-        基本设置
-      </a>
-    </li>
     <li class="layui-nav-item {{ 'layui-this' if user_page == 'message' }}">
       <a href="{{ url_for('user.user_message') }}">
         <i class="layui-icon">&#xe611;</i>
         我的消息
+      </a>
+    </li>
+    <li class="layui-nav-item {{ 'layui-this' if user_page == 'set' }}">
+      <a href="{{ url_for('user.user_set') }}">
+        <i class="layui-icon">&#xe620;</i>
+        基本设置
       </a>
     </li>
   </ul>

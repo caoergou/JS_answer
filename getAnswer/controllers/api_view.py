@@ -38,14 +38,14 @@ def post_delete(post_id):
 def post_set(post_id, field, val):
     '''设定帖子状态'''
     post = mongo.db.posts.find_one_or_404({'_id': post_id})
-    catalog = mongo.db.catalogs.find_one_or_404({'_id': post['catalog_id']})
+    topic = mongo.db.topics.find_one_or_404({'_id': post['topic_id']})
     if field != 'is_closed':
         if not current_user.user['is_admin'] and \
-                current_user.user['_id'] != catalog['moderator_id']:
+                current_user.user['_id'] != topic['moderator_id']:
             return jsonify(code_msg.USER_UN_HAD_PERMISSION)
     elif current_user.user['_id'] != post['user_id'] \
             and not current_user.user['is_admin'] \
-            and current_user.user['_id'] != catalog['moderator_id']:
+            and current_user.user['_id'] != topic['moderator_id']:
         return jsonify(code_msg.USER_UN_HAD_PERMISSION)
     val = val == 1
     # 更新帖子状态
@@ -145,7 +145,7 @@ def post_adopt(comment_id):
     post['accepted'] = True
     # 保存帖子的改动
     mongo.db.posts.save(post)
-    # 只有悬赏金币不为0的时候，才将金币加给被采纳的回帖人
+    # 只有悬赏硬币不为0的时候，才将硬币加给被采纳的回帖人
     reward = post.get('reward', 0)
     user = mongo.db.users.find_one({'_id': comment['user_id']})
     if reward > 0 and user:
@@ -213,6 +213,48 @@ def reply_zan(comment_id):
         }
     })
     return jsonify(models.R().ok())
+
+@api_view.route('/reply/putCoin/<ObjectId:comment_id>', methods=['POST'])
+@login_required
+def reply_putCoin(comment_id):
+    ok = request.values.get('ok')
+    tb_user_id = current_user.user['_id']
+    rc_user_id=mongo.db.comments.find_one({'_id':comment_id})['user_id']
+    # 在 'putCoin' 里查询当前用户的 user_id 是否在里面
+    res = mongo.db.comments.find_one({
+        '_id': comment_id,
+        'putCoin': {
+            '$elemMatch': {
+                '$eq': tb_user_id
+            }
+        }
+    })
+    if ok == 'false' and not res:
+        # 投币
+        action = '$push'
+        # 点赞后更新在 'putCoin' 里添加投币用户的 user_id，更新点赞数量 'coin_count'
+        mongo.db.comments.update_one({'_id': comment_id}, {
+            action: {
+                'putCoin': tb_user_id
+            },
+            '$inc': {
+                'coin_count': 2
+            }
+        })
+        # 还要减少投币人的硬币数量
+        mongo.db.users.update_one({'_id': tb_user_id}, {
+            '$inc': {
+                'coin_count': -2
+            }
+        })
+        mongo.db.users.update_one({'_id': rc_user_id}, {
+            '$inc': {
+                'coin_count': 2
+            }
+        })
+        remain_coin=mongo.db.users.find_one({'_id':tb_user_id})['coin']
+        return jsonify(models.R().ok().put('msg',"投币成功，剩余硬币数量："+str(remain_coin)+" 个"))
+    return jsonify(models.R().fail().put("msg","投币失败"))
 
 
 @api_view.route('/reply/update/<ObjectId:comment_id>', methods=['POST'])
@@ -286,7 +328,7 @@ def user_sign():
     # print(coin)
     # 插入签到记录
     mongo.db['user_signs'].insert_one(doc)
-    # 更新金币数量
+    # 更新硬币数量
     mongo.db.users.update({'_id': user['_id']}, {"$inc": {'coin': coin}})
     return jsonify(models.R.ok(data={'signed': True, 'coin': coin}))
 

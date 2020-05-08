@@ -6,7 +6,7 @@ from pymongo import DESCENDING
 
 
 from .. import code_msg
-from ..forms import PostForm,CatalogForm
+from ..forms import PostForm,TopicForm
 from ..models import R, BaseResult
 from ..utils import gen_verify_num, verify_num
 from ..extensions import mongo,whoosh_searcher
@@ -45,7 +45,7 @@ def add(post_id=None):
             return jsonify(R.fail(code=50001,msg=msg))
         # 一条帖子
         post = {'title': form.title.data,
-                'catalog_id': ObjectId(form.catalog_id.data),
+                'topic_id': ObjectId(form.topic_id.data),
                 'is_closed': False,
                 'content': form.content.data
         }
@@ -56,7 +56,7 @@ def add(post_id=None):
             post['modified_at'] = datetime.utcnow()
             # 更新帖子数据
             mongo.db.posts.update_one({'_id': post_id}, {'$set': post})
-            return jsonify(code_msg.ADD_QUESTION_SUCCESS.put('action', url_for('.post_detail',post_id=post_id)))
+            return jsonify(code_msg.ALTER_QUESTION_SUCCESS.put('action', url_for('.post_detail',post_id=post_id)))
         # 否则，就是新建帖子的操作
         else:
             post['created_at'] = datetime.utcnow()
@@ -69,7 +69,7 @@ def add(post_id=None):
             mongo.db.posts.insert_one(post)
             post_id = post['_id']
             # 这里将 action 字段添加到字典中，以便传入 JS 代码中触发跳转
-            return jsonify(code_msg.ALTER_QUESTION_SUCCESS.put('action', url_for('.post_detail',post_id=post_id)))
+            return jsonify(code_msg.ADD_QUESTION_SUCCESS.put('action', url_for('.post_detail',post_id=post_id)))
     # 如果是使用 GET 方法发送的请求
     ver_code = gen_verify_num()
     post = None
@@ -84,10 +84,7 @@ def add(post_id=None):
 @bbs_index.route('/')
 @bbs_index.route('/page/<int:pn>/size/<int:size>')#用来显示指定页数和回答数的页面
 @bbs_index.route('/page/<int:pn>')#只传入了 pn 参数指定页数
-@bbs_index.route("/catalog/<ObjectId:catalog_id>")#传入了 catalog_id 参数用来指定提问类别
-@bbs_index.route("/catalog/<ObjectId:catalog_id>/page/<int:pn>")
-@bbs_index.route("/catalog/<ObjectId:catalog_id>/page/<int:pn>/size/<int:size>")#在指定类别的基础上再进行分页和指定页面帖子数量。
-def index(pn=1, size=10, catalog_id=None):
+def index(pn=1, size=10):
     sort_key = request.values.get('sort_key', '_id')
     # 排序字段和升降序，DESCENDING 的值是 -1 ，表示降序
     sort_by = (sort_key, DESCENDING)#元组，分别是排序字段和升降序的标志
@@ -100,71 +97,10 @@ def index(pn=1, size=10, catalog_id=None):
         filter1['is_closed'] = True
     if post_type == 'is_cream':
         filter1['is_cream'] = True
-    # 增加问答类型
-    if catalog_id:
-        filter1['catalog_id'] = catalog_id
-        # post = mongo.db.posts.find_one_or_404({'_id': post_id})
     page = get_page('posts', pn=pn, filter1=filter1, size=size, sort_by=sort_by)
-    return render_template("post_list.html", is_index=catalog_id is None,
-            page=page, sort_key=sort_key, catalog_id=catalog_id,
-            post_type=post_type)
+    return render_template("post_list.html", 
+            page=page, sort_key=sort_key, post_type=post_type)
 
-@bbs_index.route('/catalog/add/', methods=['GET', 'POST'])
-@bbs_index.route('/catalog/edit/<ObjectId:catalog_id>/', methods=['GET', 'POST'])
-def add_catalog(catalog_id=None):
-    form = CatalogForm()
-    # 如果表单已提交
-    if form.is_submitted():
-        # 如果没通过表单类中的验证
-        if not form.validate():
-            # 这里调用 BaseResult 类的实例作为 jsonify 的参数
-            return jsonify(BaseResult(1, str(form.errors)))
-        # 对于人类操作的验证
-        verify_num(form.vercode.data)
-        # current_user 就是 models.py 文件里的 User 类的实例
-        # current_user.user 就是对应到 MongoDB 数据集合中的一条用户数据
-        user = current_user.user
-        # 如果这个字段没有被赋值为 True ，说明用户还未激活
-        # 后面的实验会使用邮箱验证来激活用户
-        if not user.get('is_active'):
-            return jsonify(code_msg.USER_UN_ACTIVE_OR_DISABLED)
-        if not user.get('is_admin'):
-            return jsonify(code_msg.USER_UN_HAD_PERMISSION)
-        if form.parent_id.data :
-            parent_id = ObjectId(form.parent_id.data)
-        else:
-            parent_id = '#'
-        # 一个话题
-        catalog = {'title': form.title.data,
-                    'description':form.description.data,
-                'parent_id': ObjectId(form.catalog_id.data) ,
-                'catalog_admin': form.catalog_admin.data,
-        }
-        # 如果有这个参数，说明该话题已经存在，现在是修改话题的操作
-        if catalog_id:
-            # 增加一个“修改时间” 字段
-            catalog['modified_at'] = datetime.utcnow()
-            # 更新帖子数据
-            mongo.db.catalogs.update_one({'_id': catalog_id}, {'$set': catalog})
-            return jsonify(code_msg.ADD_QUESTION_SUCCESS.put('action', url_for('.index',post_id=post_id)))
-        # 否则，就是新建帖子的操作
-        else:
-            catalog['created_at'] = datetime.utcnow()
-            # 将新建话题的数据添加到数据库
-            mongo.db.catalogs.insert_one(catalog)
-            post_id = post['_id']
-            # 这里将 action 字段添加到字典中，以便传入 JS 代码中触发跳转
-            return jsonify(code_msg.ALTER_QUESTION_SUCCESS.put('action', url_for('.index',post_id=post_id)))
-    # 如果是使用 GET 方法发送的请求
-    ver_code = gen_verify_num()
-    post = None
-    title = '创建话题'
-    if catalog_id:
-        catalog = mongo.db.catalogs.find_one_or_404({'_id': catalog_id})
-        title = '编辑话题'
-    return render_template('jie/add.html', page_name='jie', form=form,
-            ver_code=ver_code['question'], is_add=(post_id is None), post=post,
-            title=title)
 
 @bbs_index.route('/post/<ObjectId:post_id>/')
 @bbs_index.route('/post/<ObjectId:post_id>/page/<int:pn>/')
@@ -179,8 +115,8 @@ def post_detail(post_id, pn=1):
     # 获取评论
     page = get_page('comments', pn=pn, size=10,
             filter1={'post_id': post_id}, sort_by=('is_adopted', -1))
-    return render_template('jie/detail.html', post=post, title=post['title'],
-            page_name='jie', comment_page=page, catalog_id=post['catalog_id'])
+    return render_template('jie/detail.html', post=post, 
+            page_name='jie', comment_page=page, topic_id=post['topic_id'])
 
 @bbs_index.route('/comment/<ObjectId:comment_id>/')
 def jump_comment(comment_id):
@@ -204,10 +140,10 @@ def refresh_indexes():
     # 获取 IndexWriter 对象
     writer = whoosh_searcher.get_writer(name)
     for item in mongo.db[name].find({}, 
-                ['_id', 'title', 'content', 'create_at', 'user_id', 'catalog_id']):
+                ['_id', 'title', 'content', 'create_at', 'user_id', 'topic_id']):
         item['obj_id'] = str(item['_id'])
         item['user_id'] = str(item['user_id'])
-        item['catalog_id'] = str(item['catalog_id'])
+        item['topic_id'] = str(item['topic_id'])
         item.pop('_id')
         writer.add_document(**item)
     # 保存修改
@@ -219,15 +155,15 @@ def refresh_indexes():
 def post_search(pn=1, size=10):
     keyword = request.values.get('kw')
     if keyword is None:
-        return render_template('search/list.html', title='搜索',
+        return render_template('search/list.html', 
                 message='搜索关键字不能为空!')
     whoosh_searcher.clear('posts')
     writer = whoosh_searcher.get_writer('posts')
     for item in mongo.db['posts'].find({},
-            ['_id', 'title', 'content', 'create_at', 'user_id', 'catalog_id']):
+            ['_id', 'title', 'content', 'create_at', 'user_id', 'topic_id']):
         item['obj_id'] = str(item['_id'])
         item['user_id'] = str(item['user_id'])
-        item['catalog_id'] = str(item['catalog_id'])
+        item['topic_id'] = str(item['topic_id'])
         item.pop('_id')
         writer.add_document(**item)
     # 保存修改
@@ -246,5 +182,5 @@ def post_search(pn=1, size=10):
         page = Page(pn, size, result=result_list,
                 has_more=result.pagecount > pn, page_count=result.pagecount,
                 total=result.total)
-    return render_template('search/list.html', title=keyword + '搜索结果',
+    return render_template('search/list.html', 
             page=page, kw=keyword)

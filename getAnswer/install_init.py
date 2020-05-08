@@ -2,6 +2,7 @@ from getAnswer.extensions import mongo
 import os
 from werkzeug.security import generate_password_hash
 from datetime import datetime
+from bson import ObjectId
 
 def init():
     # 生成一个当前目录 'installed.lock' 文件的路径
@@ -23,6 +24,15 @@ def init():
         'is_active': True,
         'create_at': datetime.utcnow(),
     })
+
+    # 创建根话题信息
+    mongo.db.topics.insert_one(
+        {'name': "entire",
+        'description':'汲识问答根话题',
+        'parent_id': "#" ,
+        'topic_admin': ObjectId(mongo.db.users.find_one({'email': 'Eric@getanswer.xyz'})['_id']),
+        'create_at': datetime.utcnow(),
+        })
 
 
     options = [

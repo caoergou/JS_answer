@@ -132,28 +132,28 @@ class PagesModelView(BaseModelView):
 
 
 # 帖子种类管理
-class CatalogsForm(form.Form):
+class TopicsForm(form.Form):
     name = fields.StringField('栏目名称')
     sort_key = fields.IntegerField('排序', default=0)
     form_columns = ('name', 'sort_key')
 
 
-class CatalogsModelView(BaseModelView):
-    column_list = ('name', 'sort_key')
-    column_labels = dict(name='栏目名称', sort_key='排序')
+class TopicsModelView(BaseModelView):
+    column_list = ('name','topic_admin', 'sort_key')
+    column_labels = dict(name='话题名称',topic_admin='管理员', sort_key='排序')
     can_create = True
     can_delete = True
     can_edit = True
-    form = CatalogsForm
+    form = TopicsForm
 
     def after_model_delete(self, model):
         from ..extensions import mongo
-        catalog_id = ObjectId(model['_id'])
+        topic_id = ObjectId(model['_id'])
         post_ids = [post['_id'] for post in mongo.db.posts.find(
-                {'catalog_id': catalog_id}, {'_id': 1})]
+                {'topic_id': topic_id}, {'_id': 1})]
         mongo.db.users.update_many({}, {'$pull': {'collections': 
                 {'$in': post_ids}}})
-        mongo.db.posts.delete_many({'catalog_id': catalog_id})
+        mongo.db.posts.delete_many({'topic_id': topic_id})
 
 
 # 用户表
@@ -167,7 +167,7 @@ class UsersForm(form.Form):
     is_admin = fields.BooleanField('管理员')
     vip = fields.IntegerField('VIP等级')
     avatar = fields.StringField('头像')
-    coin = fields.IntegerField('金币')
+    coin = fields.IntegerField('硬币')
     description = fields.TextAreaField('签名')
     city = fields.StringField('城市')
     renzheng = fields.StringField('认证信息')
@@ -180,7 +180,7 @@ class UsersModelView(BaseModelView):
             'vip', 'avatar', 'coin', 'description', 'city', 'renzheng')
     column_labels = dict(email='用户邮箱', username='昵称', 
             is_active='激活状态', vip='VIP等级', is_disabled='禁用', 
-            is_admin='管理员', avatar='头像', coin='金币', 
+            is_admin='管理员', avatar='头像', coin='硬币', 
             description='签名', city='城市', renzheng='认证信息')
     can_create = True
     can_delete = True
@@ -215,3 +215,4 @@ class PostsModelView(BaseModelView):
         from ..extensions import mongo
         post_id = ObjectId(model['_id'])
         mongo.db.users.update_many({}, {'$pull': {'collections': post_id}})
+        mongo.db.comments.deleteMany({'post_id':post_id})

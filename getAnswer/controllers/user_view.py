@@ -79,6 +79,7 @@ def login():
 
 
 
+
 @user_view.route('/register', methods=['GET', 'POST'])
 def register():
     form = forms.RegisterForm()

@@ -318,10 +318,10 @@ layui.define(['layer', 'laytpl', 'form', 'element', 'upload', 'util'], function(
   //签到
   var tplSignin = ['{{# if(d.signed){ }}'
     ,'<button class="layui-btn layui-btn-disabled">今日已签到</button>'
-    ,'<span>获得了<cite>{{ d.coin }}</cite>金币</span>'
+    ,'<span>获得了<cite>{{ d.coin }}</cite>硬币</span>'
   ,'{{# } else { }}'
     ,'<button class="layui-btn layui-btn-danger" id="LAY_signin">今日签到</button>'
-    // ,'<span>可获得<cite>{{ d.experience }}</cite>金币</span>'
+    // ,'<span>可获得<cite>{{ d.experience }}</cite>硬币</span>'
   ,'{{# } }}'].join('')
   ,tplSigninDay = '已连续签到<cite>{{ d.days }}</cite>天'
 
@@ -369,7 +369,7 @@ layui.define(['layer', 'laytpl', 'form', 'element', 'upload', 'util'], function(
       ,area: '300px'
       ,shade: 0.8
       ,shadeClose: true,
-        content: '<blockquote class="layui-elem-quote">“签到”可获得社区社区金币，数量随机</blockquote>'
+        content: '<blockquote class="layui-elem-quote">“签到”可获得社区社区硬币，数量随机</blockquote>'
       // ,content: ['<div class="layui-text" style="padding: 20px;">'
       //   ,'<blockquote class="layui-elem-quote">“签到”可获得社区飞吻，规则如下</blockquote>'
       //   ,'<table class="layui-table">'

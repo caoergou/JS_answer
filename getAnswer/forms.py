@@ -36,19 +36,19 @@ class PostForm(FlaskForm):
     id = StringField()
     title = StringField(validators=[DataRequired('提问标题不能为空')])
     content = StringField(validators=[DataRequired('提问内容不能为空')])
-    catalog_id = StringField(validators=[DataRequired('提问主题不能为空')])
+    topic_id = StringField(validators=[DataRequired('提问主题不能为空')])
     reward = IntegerField(validators=[InputRequired('问题悬赏不能不选')])
     vercode = StringField(validators=[InputRequired('验证码不能为空')])
 
 
-class CatalogForm(FlaskForm):
+class TopicForm(FlaskForm):
     '''话题表单类'''
 
     id = StringField()
     title = StringField(validators=[DataRequired('话题名不能为空')])
     description = StringField(validators=[DataRequired('话题说明不能为空')])
     parent_id = StringField(validators=[DataRequired('父话题ID不能为空')])
-    catalog_admin = StringField(validators=[DataRequired('管理员邮箱不能为空')])
+    topic_admin = StringField(validators=[DataRequired('管理员邮箱不能为空')])
     vercode = StringField(validators=[InputRequired('验证码不能为空')])
 
 class ChangePassWordForm(FlaskForm):

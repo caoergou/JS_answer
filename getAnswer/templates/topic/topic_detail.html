@@ -1,0 +1,89 @@
+{% extends 'topic/topic_square.html' %}
+{% import '_pagination.html' as pagination %}
+{% block topic_detail %}
+{% set topic = mongo_find_one('topics', {'_id':topic_id}) %}
+{% set admin = mongo_find_one('users', {'_id':topic['topic_admin']}) %}
+<div class="fly-panel detail-box">
+    <!-- 这里是话题介绍的相关界面 -->
+    <div class="fly-panel-title fly-filter">
+        <h1>{{ topic.name }}话题介绍</h1>
+    </div>
+    
+    <!-- <h1>{{ topic.name }}</h1> -->
+    <div class="detail-about">
+        <a class="fly-avatar" href="/user/{{ admin._id }}">
+            <img src="{{ admin.avatar or '/static/images/avatar/1.jpg' }}" alt="{{ admin.username }}">
+        </a>
+        <div class="fly-detail-user">
+            <a href="/user/{{ admin._id }}" class="fly-link">
+                <cite>{{ admin.username or '无名' }}</cite>
+                {% if admin.renzheng %}
+                <i class="iconfont icon-renzheng">{{ admin.renzheng }}</i>
+                {% endif %}
+            </a>
+        </div>
+        <div class="detail-hits" id="LAY_jieAdmin">
+            <a>{{topic.name}} 话题管理员</a>
+        </div>
+    </div>
+    <div class="detail-body img">
+        {{ topic.description }}
+    </div>
+    <hr>
+    <div class="fly-detail-info">
+        <div sytle="float:left;">
+            <span class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal" ><a href="/topic/edit/{{ topic._id }}">编辑话题</a></span>
+        </div>
+        <div style="float:right;">
+            <span class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal" ><a href="/add">提问</a></span>
+        </div>
+        
+    </div>
+</div>
+<div class=" fly-panel" style="margin-bottom: 0;">
+    {% set url_prefix=("/topic/" + topic_id|string) if topic_id else '/' %}
+    {% set url_suffix=(('?sort_key=' + sort_key) if sort_key else '') + ('&type=' + post_type if post_type else '') %}
+    <div class="fly-panel-title fly-filter">
+        <a href="{{ url_prefix }}?sort_key={{ sort_key }}" {{ 'class=layui-this' if not post_type }}>综合</a>
+        <span class="fly-mid"></span>
+        <a href="{{ url_prefix }}?sort_key={{ sort_key }}&type=not_closed"
+            {{ 'class=layui-this' if post_type == 'not_closed' }}>未结</a>
+        <span class="fly-mid"></span>
+        <a href="{{ url_prefix }}?sort_key={{ sort_key }}&type=is_closed"
+            {{ 'class=layui-this' if post_type == 'is_closed' }}>已结</a>
+        <span class="fly-mid"></span>
+        <a href="{{ url_prefix }}?sort_key={{ sort_key }}&type=is_cream"
+            {{ 'class=layui-this' if post_type == 'is_cream' }}>精华</a>
+        <span class="fly-filter-right layui-hide-xs">
+            <a href="{{ url_prefix }}?sort_key=_id{{ '&type=' + post_type if post_type }}"
+                {{ 'class=layui-this' if sort_key == '_id' }}>按最新</a>
+            <span class="fly-mid"></span>
+            <a href="{{ url_prefix }}?sort_key=comment_count{{ '&type=' + post_type if post_type }}"
+                {{ 'class=layui-this' if sort_key == 'comment_count' }}>按热议</a>
+        </span>
+    </div>
+    <ul class="fly-list">
+        {% for item in page.result %}
+        {% include '_list_item.html' %}
+        {% else %}
+        <div style="min-height: 60px; text-align: center; padding-top:50px; color: #999;">没有相关数据</div>
+        {% endfor %}
+    </ul>
+    {% if page.page_count > 1 %}
+    {% include '_pagination.html' %}
+    {{ pagination.paginate(page, url_prefix, url_suffix) }}
+    {% endif %}
+</div>
+</div>
+{% endblock %}
+
+{% block fly_use %}
+.use(['fly', 'face'], function(){
+var $ = layui.$
+,fly = layui.fly;
+$('.detail-body').each(function(){
+var othis = $(this), html = othis.html();
+othis.html(fly.content(html));
+});
+});
+{% endblock %}

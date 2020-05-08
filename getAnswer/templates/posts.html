@@ -5,23 +5,18 @@
   <div class="layui-container">
     <ul class="layui-clear">
       <li class="layui-hide-xs {{ 'layui-this' if is_index }}"><a href="/">综合</a></li>
-      {% for item in get_list('catalogs', sort_by=('sort_key', 1)) %}
-      <li class="layui-hide-xs {{ 'layui-this' if catalog_id == item._id }}">
-        <a href="/catalog/{{ item._id }}">{{ item.name }}</a>
-      </li>
-      {% endfor %}
       <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><span class="fly-mid"></span></li>
       {% if current_user.is_authenticated %}
-      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="#">我发表的贴</a></li>
-      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="#">我收藏的贴</a></li>
+      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="{{ url_for('user.user_home', user_id=current_user.user._id) }}">我发表的贴</a></li>
+      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a
+          href="../user/index.html#collection">我收藏的贴</a></li>
       {% endif %}
     </ul>
     <div class="fly-column-right layui-hide-xs">
       <span class="fly-search"><i class="layui-icon"></i></span>
       <a href="{{ url_for('bbs_index.add') }}" class="layui-btn">发表新帖</a>
     </div>
-    <div class="layui-hide-sm layui-show-xs-block"
-         style="margin-top: -10px; padding-bottom: 10px; text-align: center;">
+    <div class="layui-hide-sm layui-show-xs-block" style="margin-top: -10px; padding-bottom: 10px; text-align: center;">
       <a href="{{ url_for('bbs_index.add') }}" class="layui-btn">发表新帖</a>
     </div>
   </div>
@@ -31,18 +26,6 @@
     {% block content %}
     {% endblock %}
     <div class="layui-col-md4">
-      {% if is_index %}
-      <div class="fly-panel">
-        <h3 class="fly-panel-title">温馨通道(暂无内容)</h3>
-        <ul class="fly-panel-main fly-list-static">
-          {% for item in get_list('passageways', sort_by=('sort', -1)) %}
-          <li>
-            <a href="{{ item.url }}" target="_blank">{{ item.name }}</a>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-
       {% if current_user.is_authenticated %}
       <div class="fly-panel fly-signin">
         <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
@@ -63,16 +46,17 @@
           <!--<i class="layui-icon fly-loading">&#xe63d;</i>-->
           {% for item in get_list('users', sort_by=('reply_count',-1), size=12) %}
           <dd>
-            <a href="#">
-              暂未实现
+            <a href="/user/{{ item._id }}">
+              <img src="{{ item.avatar }}"><cite>{{ item.username }}</cite><i>{{ item.get('reply_count', 0) }}次回答</i>
             </a>
+
           </dd>
           {% else %}
           <div class="fly-none">没有相关数据</div>
           {% endfor %}
         </dl>
       </div>
-      {% endif %}
+
       <dl class="fly-panel fly-list-one">
         <dt class="fly-panel-title">本周热议</dt>
         {% for item in get_list('posts', sort_by=('comment_count',-1), size=10, 
@@ -85,6 +69,19 @@
         <div class="fly-none">没有相关数据</div>
         {% endfor %}
       </dl>
+
+      <div class="fly-panel">
+        <h3 class="fly-panel-title">友情链接</h3>
+        <ul class="fly-panel-main fly-list-static">
+          {% for item in get_list('friend_links', sort_by=('sort', -1)) %}
+          <li>
+            <dd><a href="{{ item.url }}" target="_blank">{{ item.name }}</a></dd>
+          </li>
+          {% else %}
+          <a>友情链接请联系 : mrjingcheng@foxmail.com</a>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
   </div>
 </div>

@@ -26,6 +26,7 @@ from getAnswer import flask_objectid_converter
 
 def create_app(config):
     app = Flask(__name__)
+    app.jinja_env.auto_reload = True
     app.config['SECRET_KEY'] = 'ergou'
     app.config['JSON_AS_ASCII'] = False
     app.url_map.converters['ObjectId'] = flask_objectid_converter.ObjectIDConverter

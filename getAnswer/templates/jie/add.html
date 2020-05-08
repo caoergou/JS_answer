@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% block title %}
+提问
+{% endblock %}
 {% block body %}
 
 <div class="layui-container fly-marginTop">
@@ -33,10 +36,10 @@
               <div class="layui-form-item">
                 <label class="layui-form-label">所属话题</label>
                 <div class="layui-input-block">
-                  <select lay-verify="required" name="catalog_id" {{ 'disabled' if post.is_closed }}>
+                  <select lay-verify="required" name="topic_id" {{ 'disabled' if post.is_closed }} lay-search>
                     <option></option>
-                    {% for item in get_list('catalogs') %}
-                    <option value="{{ item._id }}" {{ 'selected' if post and post['catalog_id'] == item._id }}>
+                    {% for item in get_list('topics') %}
+                    <option value="{{ item._id }}" {{ 'selected' if post and post['topic_id'] == item._id }}>
                       {{ item.name }}</option>
                     {% endfor %}
 

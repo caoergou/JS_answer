@@ -2,7 +2,10 @@
 <html>
 <head>
   <meta charset='utf-8'>
-  <title>{% block title %}汲识问答{% endblock %}</title>
+  <link rel="icon" href="/static/images/logo2.png">
+
+
+  <title>{% block title %}{% endblock %}- 汲识问答</title>
   <meta name="viewport" content="width=device-width, initial-scale=1,
     maximum-scale=1">
   <link rel="stylesheet" href="/static/layui/css/layui.css">
@@ -39,14 +42,14 @@
                 <img src="{{ current_user.user.avatar }}">
               </a>
               <dl class="layui-nav-child">
-                <dd><a href="{{ url_for('user.user_set') }}">
-                  <i class="layui-icon">&#xe620;</i>基本设置</a>
+                <dd><a href="{{ url_for('user.user_home', user_id=current_user.user._id) }}">
+                  <i class="layui-icon" style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a>
                 </dd>
                 <dd><a href="{{ url_for('user.user_message') }}">
                   <i class="iconfont icon-tongzhi" style="top: 4px;"></i>我的消息</a>
                 </dd>
-                <dd><a href="{{ url_for('user.user_home', user_id=current_user.user._id) }}">
-                  <i class="layui-icon" style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a>
+                <dd><a href="{{ url_for('user.user_set') }}">
+                  <i class="layui-icon">&#xe620;</i>基本设置</a>
                 </dd>
                 <hr style="margin: 5px 0;">
                 <dd><a href="{{ url_for('user.logout') }}" style="text-align: center;">退出</a></dd>

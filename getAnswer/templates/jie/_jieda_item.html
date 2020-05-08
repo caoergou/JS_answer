@@ -1,0 +1,77 @@
+
+
+<li data-id="{{ item._id }}" {{ 'class=jieda-daan' if item.is_adopted }}>
+
+  <div class="fly-panel detail-box">
+    <!-- 这里是回答的相关界面 -->
+    <a name="item-{{ item._id }}"></a>
+    <div class="detail-about detail-about-reply">
+      <a class="fly-avatar" href="/user/{{ item_user._id}}">
+        <img src="{{ item_user.avatar }}" alt=" ">
+      </a>
+      <div class="fly-detail-user">
+        <a href="/user/{{ item_user._id}}" class="fly-link">
+          <cite>{{ item_user.username }}</cite>
+          {% if item_user.renzheng %}
+          <i class="iconfont icon-renzheng">{{ item_user.renzheng }}</i>
+          {% endif %}
+          {% if item_user.get('vip', 0) > 0 %}
+          <i class="layui-badge fly-badge-vip">VIP{{ item_user.vip }}</i>
+          {% endif %}
+        </a>
+
+        {% if post.user_id == item_user_id %}
+        <span>(提问者)</span>
+        {% endif %}
+        {% if item_user.is_admin %}
+        <span style="color:#5FB878">(管理员)</span>
+        {% endif %}
+        {% if item_user.is_disabled %}
+        <span style="color:#999">（该号已被封）</span>
+        {% endif %}
+      </div>
+
+      <div class="detail-hits">
+        <a >{{ post.user.get('desc') or '这家伙懒得留下签名' }}</a>
+        <span>{{ item.create_at|mongo_date_str }}</span>
+      </div>
+      {% if item.is_adopted %}
+      <i class="iconfont icon-caina" title="最佳答案"></i>
+      {% endif %}
+    </div>
+    <div class="detail-body jieda-body photos">
+      {{ item.content }}
+    </div>
+
+    <div class="jieda-reply">
+      {% if current_user.is_authenticated and (not current_user.user.is_disabled) %}
+      <span class="jieda-zan {{ 'zanok' if current_user.user['_id'] in item.get('zan', []) }}" type="zan">
+        <i class="iconfont icon-zan"></i>
+        <em>{{ item.get('zan_count', 0) }}</em>
+      </span>
+      <span class="jieda-zan {{ 'putCoinok' if current_user.user['_id'] in item.get('coin', []) }}" type="putCoin">
+        <i class="layui-icon">&#xe65e;</i> 
+        <em>{{ item.get('putCoin', 0) }}</em>
+      </span>
+      <span type="reply">
+        <i class="iconfont icon-svgmoban53"></i>
+        回复
+      </span>
+      {% endif %}
+      <div class="jieda-admin">
+        {% if current_user.is_authenticated  and (item_user._id == current_user.user._id) and not post.is_closed %}
+        <span type="edit">点评</span>
+        {% endif %}
+        {% if current_user.is_authenticated  and (item_user._id == current_user.user._id) and not post.is_closed %}
+        <span type="edit">编辑</span>
+        {% endif %}
+        {% if current_user.is_authenticated  and (current_user.user.is_admin) %}
+        <span type="del">删除</span>
+        {% endif %}
+        {% if not post.accepted and current_user.is_authenticated  and post.user._id == current_user.user._id %}
+        <span class="jieda-accept" type="accept">采纳</span>
+        {% endif %}
+      </div>
+    </div>
+
+</li>

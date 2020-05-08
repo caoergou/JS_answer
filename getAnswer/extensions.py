@@ -63,6 +63,7 @@ def user_load(user_id):
 def init_extensions(app):
     # 调用 PyMongo 类的 init_app 方法进行初始化
     mongo.init_app(app)
+    
     # 调用 init_app 方法注册 app
     # 此方法的主要作用就是将 login_manager 本身赋值给 app.login_manager 属性
     # 以便 app 能够使用其登录登出等功能
@@ -86,7 +87,7 @@ def init_extensions(app):
     post_schema = Schema(obj_id=ID(unique=True, stored=True),
 			title=TEXT(stored=True, analyzer=chinese_analyzer),
 			content=TEXT(stored=True, analyzer=chinese_analyzer),
-			create_at=DATETIME(stored=True), catalog_id=ID(stored=True),
+			create_at=DATETIME(stored=True), topic_id=ID(stored=True),
 			user_id=ID(stored=True))
     whoosh_searcher.add_index('posts', post_schema)
 
@@ -96,7 +97,7 @@ def init_extensions(app):
         admin.add_view(admin_view.OptionsModelView(mongo.db['options'], 
                 '系统设置'))
         admin.add_view(admin_view.UsersModelView(mongo.db['users'], '用户管理'))
-        admin.add_view(admin_view.CatalogsModelView(mongo.db['catalogs'], 
+        admin.add_view(admin_view.TopicsModelView(mongo.db['topics'], 
                 '栏目管理', category='内容管理'))
         admin.add_view(admin_view.PostsModelView(mongo.db['posts'], 
                 '帖子管理', category='内容管理'))

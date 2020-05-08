@@ -164,14 +164,31 @@ layui.define('fly', function (exports) {
     zan: function (li) { //赞
       var othis = $(this), ok = othis.hasClass('zanok');
       var div = $(".jieda-admin");
-
-      fly.json('/api/reply/zan/' + div.attr('data-id'), {
+      
+      fly.json('/api/reply/zan/' + li.data('id'), {
         ok: ok
       }, function (res) {
         if (res.status === 0) {
-          var zans = othis.find('em').html() | 0;
+          var zans = othis.find('em')[0].html() | 0;
           othis[ok ? 'removeClass' : 'addClass']('zanok');
-          othis.find('em').html(ok ? (--zans) : (++zans));
+          othis.find('em')[0].html(ok ? (--zans) : (++zans));
+        } else {
+          layer.msg(res.msg);
+        }
+      });
+    },
+    putCoin: function (li) { //投币
+      var othis = $(this), ok = othis.hasClass('putCoinok');
+      var div = $(".jieda-admin");
+      
+      fly.json('/api/reply/putCoin/' + li.data('id'), {
+        ok: ok
+      }, function (res) {
+        if (res.status === 0) {
+          var coins = othis.find('em')[1].html() | 0;
+          othis[ok ? 'removeClass' : 'addClass']('putCoinok');
+          othis.find('em')[1].html(ok ? (--coins) : (++coins));
+          layer.msg(res.msg);
         } else {
           layer.msg(res.msg);
         }

@@ -21,13 +21,13 @@
       <ul class="fly-list">
         {% for item in page.result %}
           {% set item_user = mongo_find_one('users', {'_id': item.user_id}) or {} %}
-          {% set item_catalog = mongo_find_one('catalogs', {'_id': item.catalog_id}) %}
+          {% set item_topic = mongo_find_one('topics', {'_id': item.topic_id}) %}
           <li>
             <a href="/user/{{ item_user._id }}" class="fly-avatar">
               <img src="{{ item_user.avatar or '/static/images/avatar/1.jpg' }}" alt="{{ item_user.username }}">
             </a>
             <h2>
-              <a class="layui-badge">{{ item_catalog.name }}</a>
+              <a class="layui-badge">{{ item_topic.name }}</a>
               <a href="/post/{{ item.obj_id }}">{{ item.title }}</a>
             </h2>
             <div class="fly-list-info">
