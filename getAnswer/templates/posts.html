@@ -8,12 +8,12 @@
       <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><span class="fly-mid"></span></li>
       {% if current_user.is_authenticated %}
       <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="{{ url_for('user.user_home', user_id=current_user.user._id) }}">我发表的贴</a></li>
-      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a
-          href="../user/index.html#collection">我收藏的贴</a></li>
+      <!-- <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a
+          href="../user/index.html#collection">我收藏的贴</a></li> -->
       {% endif %}
     </ul>
     <div class="fly-column-right layui-hide-xs">
-      <span class="fly-search"><i class="layui-icon"></i></span>
+      <!-- <span class="fly-search"><i class="layui-icon"></i></span> -->
       <a href="{{ url_for('bbs_index.add') }}" class="layui-btn">发表新帖</a>
     </div>
     <div class="layui-hide-sm layui-show-xs-block" style="margin-top: -10px; padding-bottom: 10px; text-align: center;">

@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="layui-row layui-col-space10">
+<div class="layui-row layui-col-space15">
 
-  <div class="layui-col-md2">
+  <div class="layui-col-md1">
 
   </div>
   <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
@@ -12,6 +12,11 @@
   <ul class="layui-col-md3 layui-bg-blue layui-nav layui-nav-tree" lay-filter="test">
     {% set root = mongo_find_one('topics', {'name':'entire'}) %}
     {% for item1 in get_list('topics',filter1={'parent_id':root['_id']} ) %}
+    {% if get_list('topics',filter1={'parent_id':item1['_id']}) == [] %}
+    <li class="layui-nav-item">
+      <a class="" href="{{item1._id}}">{{item1.name}}</a>
+    </li>
+    {% else %}
     <li class="layui-nav-item">
       <a class="" href="javascript:;">{{item1.name}}</a>
       <dl class="layui-nav-child">
@@ -21,6 +26,7 @@
         {% endfor %}
       </dl>
     </li>
+    {% endif %}
     {% endfor %}
     {% if user.get('is_admin') %}
     <li class="layui-nav-item">
@@ -29,9 +35,40 @@
     {% endif %}
   </ul>
 
-  <div class="layui-col-md5">
+  <div class="layui-col-md8">
+    
     {% if is_index %}
-      <a>假设我们在这说了一段骚话</a>
+    <div class="fly-panel detail-box">
+
+    <div align="center"><img width="50%"  src="https://puui.qpic.cn/qqvideo_ori/0/e086437vb6y_496_280/0" /></div> 
+    <div align="center">
+    <blockquote>
+      <p>
+        <span >恰同学少年，风华正茂；书生意气，挥斥方遒。</span>
+      </p>
+    </blockquote>
+  </div>
+    <hr>
+    <div>
+      <blockquote>
+        <p>
+          <span style="font-size:24px;">2017年5月3日习近平在中国政法大学考察时讲道：</span>
+        </p>
+      </blockquote>
+      <blockquote>
+        <blockquote>
+          <p>
+            <span style="font-size:18px;font-family:KaiTi_GB2312;"><strong>青年处于人生积累阶段，需要像海绵汲水一样汲取知识。广大青年抓学习，既要惜时如金、孜孜不倦，下一番心无旁骛、静谧自怡的功夫，又要突出主干、择其精要，努力做到又博又专、愈博愈专。</strong></span>
+          </p>
+        </blockquote>
+      </blockquote>
+      <p>
+        <br />
+      </p>
+    </div>
+  </div>
+    {% block topic_index %}
+    {% endblock %}
     {% endif %}
     <!-- 内容主体区域 -->
     {% block topic_detail %}

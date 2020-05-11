@@ -106,16 +106,16 @@ layui.define('fly', function (exports) {
     }
 
     //收藏
-    , collect: function (div) {
-      var othis = $(this), type = othis.data('type');
-      fly.json('/collection/' + type + '/' + div.data('id'), function (res) {
-        if (type === 'add') {
-          othis.data('type', 'remove').html('取消收藏').addClass('layui-btn-danger');
-        } else if (type === 'remove') {
-          othis.data('type', 'add').html('收藏').removeClass('layui-btn-danger');
-        }
-      });
-    }
+    // , collect: function (div) {
+    //   var othis = $(this), type = othis.data('type');
+    //   fly.json('/collection/' + type + '/' + div.data('id'), function (res) {
+    //     if (type === 'add') {
+    //       othis.data('type', 'remove').html('取消收藏').addClass('layui-btn-danger');
+    //     } else if (type === 'remove') {
+    //       othis.data('type', 'add').html('收藏').removeClass('layui-btn-danger');
+    //     }
+    //   });
+    // }
   };
 
   $('body').on('click', '.jie-admin', function () {
@@ -125,14 +125,14 @@ layui.define('fly', function (exports) {
 
   //异步渲染
   var asyncRender = function () {
-    var div = $('.fly-admin-box'), jieAdmin = $('#LAY_jieAdmin');
-    //查询帖子是否收藏
-    if (jieAdmin[0] && layui.cache.user.uid != '') {
-      fly.json('/collection/find/' + div.data('id'), function (res) {
-        jieAdmin.append('<span class="layui-btn layui-btn-xs jie-admin ' + (res.data.collection ? 'layui-btn-danger' : '') + '" type="collect" data-type="' + (res.data.collection ? 'remove' : 'add') + '">' + (res.data.collection ? '取消收藏' : '收藏') + '</span>');
-      });
-    }
-  }();
+  //   var div = $('.fly-admin-box'), jieAdmin = $('#LAY_jieAdmin');
+  //   //查询帖子是否收藏
+  //   if (jieAdmin[0] && layui.cache.user.uid != '') {
+  //     fly.json('/collection/find/' + div.data('id'), function (res) {
+  //       jieAdmin.append('<span class="layui-btn layui-btn-xs jie-admin ' + (res.data.collection ? 'layui-btn-danger' : '') + '" type="collect" data-type="' + (res.data.collection ? 'remove' : 'add') + '">' + (res.data.collection ? '取消收藏' : '收藏') + '</span>');
+  //     });
+  //   }
+  // }();
 
   //解答操作
   gather.jiedaActive = {

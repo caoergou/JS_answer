@@ -42,6 +42,9 @@
         {% else %}
         <span class="layui-btn layui-btn-xs jie-admin" type="set" field="is_cream" rank="1">加精</span>
         {% endif %}
+        {% if current_user.is_authenticated and (post.user._id == current_user.user._id or current_user.user.is_admin) and not post.is_closed %}
+        <span class="layui-btn layui-btn-xs jie-admin" type="edit"><a style="text-decoration: none;color:#ffffff" href="/edit/{{ post._id }}">编辑此贴</a></span>
+        {% endif %}
         {% endif %}
         {% endif %}
       </div>
@@ -65,9 +68,6 @@
       </div>
       <div class="detail-hits" id="LAY_jieAdmin" data-id="{{ post._id }}">
         <a >{{ post.user.get('desc') or '这家伙懒得留下签名' }}</a>
-        {% if current_user.is_authenticated and (post.user._id == current_user.user._id or current_user.user.is_admin) and not post.is_closed %}
-        <span class="layui-btn layui-btn-xs jie-admin" type="edit"><a href="/edit/{{ post._id }}">编辑此贴</a></span>
-        {% endif %}
       </div>
     </div>
     <div class="detail-body img">

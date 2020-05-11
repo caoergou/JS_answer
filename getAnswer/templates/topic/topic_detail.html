@@ -8,7 +8,7 @@
     <div class="fly-panel-title fly-filter">
         <h1>{{ topic.name }}话题介绍</h1>
     </div>
-    
+
     <!-- <h1>{{ topic.name }}</h1> -->
     <div class="detail-about">
         <a class="fly-avatar" href="/user/{{ admin._id }}">
@@ -30,14 +30,19 @@
         {{ topic.description }}
     </div>
     <hr>
-    <div class="fly-detail-info">
-        <div sytle="float:left;">
-            <span class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal" ><a href="/topic/edit/{{ topic._id }}">编辑话题</a></span>
-        </div>
-        <div style="float:right;">
-            <span class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal" ><a href="/add">提问</a></span>
-        </div>
-        
+    <div style="position: relative; margin: 5px 0 40px;">
+        <div style="width:auto">
+            {% if current_user.user['_id'] == admin['_id'] %}
+            　　<div style="float:left;width:200px">
+                <span class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal"><a
+                        href="/topic/edit/{{ topic._id }}">编辑话题</a></span>
+            </div>
+            {% endif %}
+            　　<div style="float:right;"><span
+                    class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal"><a href="/add">提问</a></span>
+            </div>
+    　　</div>
+
     </div>
 </div>
 <div class=" fly-panel" style="margin-bottom: 0;">

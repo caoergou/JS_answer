@@ -88,7 +88,6 @@ def register():
         # 如果没有通过注册表单类中定义的验证，返回错误信息
         if not form.validate():
             return jsonify(code_msg.PASSWORD_ERROR)
-            return jsonify({'status': 50001, 'msy': str(form.errors)})
         # 处理验证问题，如果出现异常，捕获并返回 404
         utils.verify_num(form.vercode.data)
         # 这步用来验证邮箱是否已经被注册
@@ -108,8 +107,7 @@ def register():
                 'created_at': datetime.utcnow()
         }
         mongo.db.users.insert_one(user)
-        utils.send_email(form.email.data, '你激活了',
-                body='你已经成功注册了账号，同时完成了发送邮件功能！')
+        send_active_email(user['username'], user['_id'], user['email'])
         # mongo.db.users.update_one({'username': form.username.data},
         #         {'$set': {'is_active': True}})
         action = request.values.get('next')
@@ -132,7 +130,7 @@ def send_active_email(username, user_id, email, is_forget=False):
         utils.send_email(email, '重置密码', body=body)
         return
     # 激活邮件内容
-    body = render_template('email/user_active.html', username=username,
+    body = render_template('email/user_activate.html', username=username,
             url=url_for('user.user_active', code=code.inserted_id,
             _external=True))
     # 发送邮件
@@ -159,7 +157,7 @@ def user_active():
                 return render_template('user/activate.html')
         # 如果没有登录,显示错误
         if not current_user.is_authenticated:
-            abort(403)
+            jsonify({'status': 50001, 'msy': '错误'})
         return render_template('user/activate.html')
     user = current_user.user
     # 删除

@@ -91,6 +91,16 @@ class AdsModelView(BaseModelView):
     can_edit = True
     form = AdsForm
 
+# 主页文章管理
+class IndexModelView(form.Form):
+    title = fields.StringField('标题', validators=[DataRequired('标题不能为空')])
+    # reward = fields.IntegerField('悬赏')
+    # comment_count = fields.IntegerField('回帖数')
+    # is_top = fields.BooleanField('置顶')
+    # is_cream = fields.BooleanField('加精')
+    # is_closed = fields.BooleanField('已结')
+    # form_columns = ('title','reward','comment_count', 'is_top','is_cream', 
+    #         'is_closed')
 
 class FooterLinksForm(form.Form):
     name = fields.StringField('名称')
@@ -186,6 +196,9 @@ class UsersModelView(BaseModelView):
     can_delete = True
     can_edit = True
     form = UsersForm
+
+
+
 
 
 # 帖子表管理

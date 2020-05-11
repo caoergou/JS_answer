@@ -101,6 +101,8 @@ def init_extensions(app):
                 '栏目管理', category='内容管理'))
         admin.add_view(admin_view.PostsModelView(mongo.db['posts'], 
                 '帖子管理', category='内容管理'))
+        # admin.add_view(admin_view.IndexModelView(mongo.db['index_article'], 
+        #         '主页文章管理', category='内容管理'))
         admin.add_view(admin_view.PassagewaysModelView(mongo.db['passageways'], 
                 '温馨通道', category='推广管理'))
         admin.add_view(admin_view.FriendLinksModelView(mongo.db['friend_links'], 
