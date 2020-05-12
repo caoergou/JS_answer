@@ -29,7 +29,7 @@ def post_delete(post_id):
     # whoosh_searcher.delete_document('posts', 'obj_id', str(post_id))
     return jsonify(
         code_msg.DELETE_SUCCESS.put(
-            'action', url_for('index.index')))
+            'action', url_for('bbs_index.index')))
 
 
 @api_view.route('/post/set/<ObjectId:post_id>/<string:field>/<int:val>',

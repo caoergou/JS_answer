@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% block title %}话题广场{% endblock %}
 {% block body %}
 <div class="layui-row layui-col-space15">
 
@@ -10,7 +10,7 @@
 
 
   <ul class="layui-col-md3 layui-bg-blue layui-nav layui-nav-tree" lay-filter="test">
-    {% set root = mongo_find_one('topics', {'name':'entire'}) %}
+    {% set root = mongo_find_one('topics', {'name':'元话题'}) %}
     {% for item1 in get_list('topics',filter1={'parent_id':root['_id']} ) %}
     {% if get_list('topics',filter1={'parent_id':item1['_id']}) == [] %}
     <li class="layui-nav-item">
@@ -22,7 +22,7 @@
       <dl class="layui-nav-child">
         <dd><a href="{{item1._id}}">{{item1.name}}</a></dd>
         {% for item2 in get_list('topics',filter1={'parent_id':item1['_id']} ) %}
-        <dd><a href="{{item2._id}}">子话题 {{item2.name}}</a></dd>
+        <dd><a href="{{item2._id}}">- {{item2.name}}</a></dd>
         {% endfor %}
       </dl>
     </li>

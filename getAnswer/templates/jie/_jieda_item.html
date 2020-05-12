@@ -49,10 +49,6 @@
         <i class="iconfont icon-zan"></i>
         <em>{{ item.get('zan_count', 0) }}</em>
       </span>
-      <span class="jieda-zan {{ 'putCoinok' if current_user.user['_id'] in item.get('coin', []) }}" type="putCoin">
-        <i class="layui-icon">&#xe65e;</i> 
-        <em>{{ item.get('putCoin', 0) }}</em>
-      </span>
       <span type="reply">
         <i class="iconfont icon-svgmoban53"></i>
         回复

@@ -14,12 +14,13 @@
     
   </h2>
   <div class="fly-list-info">
-    <a href="/user/{{ item_user._id or 'none'}}" link>
+    
+<a href="/user/{{ item_user._id or 'none'}}" link>
       <cite>{{ item_user.username or '无名' }}</cite>
       {% if item_user.renzheng %}
         <i class="iconfont icon-renzheng">{{ item_user.renzheng }}</i>
       {% endif %}
-    </a>
+    </a><span> {{item.get('created_at',0)|mongo_date_str}}  </span>
     <span>{{ item.create_at|mongo_date_str }}</span>
     {% if item.is_closed %}
       <span class="layui-badge fly-badge-accept layui-hide-xs">已结</span>
