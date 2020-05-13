@@ -7,17 +7,17 @@
       <li class="layui-hide-xs {{ 'layui-this' if is_index }}"><a href="/">综合</a></li>
       <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><span class="fly-mid"></span></li>
       {% if current_user.is_authenticated %}
-      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="{{ url_for('user.user_home', user_id=current_user.user._id) }}">我发表的贴</a></li>
+      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="{{ url_for('user.user_home', user_id=current_user.user._id) }}">我提出的问题</a></li>
       <!-- <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a
           href="../user/index.html#collection">我收藏的贴</a></li> -->
       {% endif %}
     </ul>
     <div class="fly-column-right layui-hide-xs">
       <!-- <span class="fly-search"><i class="layui-icon"></i></span> -->
-      <a href="{{ url_for('bbs_index.add') }}" class="layui-btn">发表新帖</a>
+      <a href="{{ url_for('bbs_index.add') }}" class="layui-btn">提出问题</a>
     </div>
     <div class="layui-hide-sm layui-show-xs-block" style="margin-top: -10px; padding-bottom: 10px; text-align: center;">
-      <a href="{{ url_for('bbs_index.add') }}" class="layui-btn">发表新帖</a>
+      <a href="{{ url_for('bbs_index.add') }}" class="layui-btn">提出问题</a>
     </div>
   </div>
 </div>
@@ -60,7 +60,7 @@
       <dl class="fly-panel fly-list-one">
         <dt class="fly-panel-title">本周热议</dt>
         {% for item in get_list('posts', sort_by=('comment_count',-1), size=10, 
-            filter1={'create_at':{'$gte': date_cal(7, False)}}) %}
+            filter1={'created_at':{'$gte': date_cal(7, False)}}) %}
         <dd>
           <a href="/post/{{ item._id }}">{{ item.title }}</a>
           <span><i class="iconfont icon-pinglun1"></i> {{ item.get('comment_count', 0) }}</span>

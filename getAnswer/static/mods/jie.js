@@ -124,7 +124,7 @@ layui.define('fly', function (exports) {
   });
 
   //异步渲染
-  var asyncRender = function () {
+  // var asyncRender = function () {
   //   var div = $('.fly-admin-box'), jieAdmin = $('#LAY_jieAdmin');
   //   //查询帖子是否收藏
   //   if (jieAdmin[0] && layui.cache.user.uid != '') {

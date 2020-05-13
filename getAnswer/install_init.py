@@ -13,8 +13,8 @@ def init():
 
     # 创建管理员信息
     mongo.db.users.insert_one({
-        'email': 'Eric@getanswer.xyz',
-        'username': 'Eric',
+        'email': 'admin@getanswer.xyz',
+        'username': 'admin',
         'password': generate_password_hash('password'),
         'is_admin': True,
         'renzheng': '汲识问答-管理员',
@@ -27,7 +27,7 @@ def init():
 
     # 创建根话题信息
     mongo.db.topics.insert_one(
-        {'name': "entire",
+        {'name': "元话题",
         'description':'汲识问答根话题',
         'parent_id': "#" ,
         'topic_admin': ObjectId(mongo.db.users.find_one({'email': 'Eric@getanswer.xyz'})['_id']),
