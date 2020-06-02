@@ -30,7 +30,7 @@ def init():
         {'name': "元话题",
         'description':'汲识问答根话题',
         'parent_id': "#" ,
-        'topic_admin': ObjectId(mongo.db.users.find_one({'email': 'Eric@getanswer.xyz'})['_id']),
+        'topic_admin': ObjectId(mongo.db.users.find_one({'email': 'admin@getanswer.xyz'})['_id']),
         'create_at': datetime.utcnow(),
         })
 

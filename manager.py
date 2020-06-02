@@ -13,5 +13,5 @@ manager = Manager(app)
 manager.add_command('runserver', Server(use_debugger=True,host="0.0.0.0",port=80,threaded=True))
 
 if __name__ == '__main__':
-  print("更新于 2020.5.8 14:26")
+  print("更新于 2020.6.2 11:56")
   manager.run()

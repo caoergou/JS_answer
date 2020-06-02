@@ -13,7 +13,7 @@ class RegisterForm(FlaskForm):
             Email('请输入正确的邮箱格式')])
     username = StringField(validators=[DataRequired('用户名不能为空')])
     password = PasswordField(validators=[DataRequired('密码不能为空'),
-            Length(6, 26, '密码长度为 6 ~ 26 个字符')])
+            Length(min=6, max=16,message=code_msg.PASSWORD_LENGTH_ERROR.get_msg())])
     repeat_password = PasswordField(validators=[
             EqualTo('password', '两次输入的密码不一致')])
     vercode = StringField(validators=[InputRequired('答案写错了')])
@@ -24,7 +24,7 @@ class LoginForm(FlaskForm):
 
     email = StringField(validators=[DataRequired('邮箱不能为空')])
     password = PasswordField(validators=[DataRequired('密码不能为空'),
-            Length(6, 26, '密码长度为 6 ~ 26 个字符')])
+			Length(min=6, max=16,message=code_msg.PASSWORD_LENGTH_ERROR.get_msg())])
     vercode = StringField(validators=[InputRequired('答案写错了')])
 
 

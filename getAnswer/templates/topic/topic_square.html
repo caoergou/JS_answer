@@ -11,6 +11,9 @@
 
   <ul class="layui-col-md3 layui-bg-blue layui-nav layui-nav-tree" lay-filter="test">
     {% set root = mongo_find_one('topics', {'name':'元话题'}) %}
+    <li class="layui-nav-item">
+      <a class="" href="{{root._id}}">{{root.name}}</a>
+    </li>
     {% for item1 in get_list('topics',filter1={'parent_id':root['_id']} ) %}
     {% if get_list('topics',filter1={'parent_id':item1['_id']}) == [] %}
     <li class="layui-nav-item">
@@ -28,7 +31,7 @@
     </li>
     {% endif %}
     {% endfor %}
-    {% if user.get('is_admin') %}
+    {% if current_user.user and current_user.user.get('is_admin') %}
     <li class="layui-nav-item">
       <a class="" href="add">新建话题</a>
     </li>

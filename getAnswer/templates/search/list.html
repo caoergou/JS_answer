@@ -4,10 +4,10 @@
 {% block content %}
   <div class="layui-col-md8">
     <div class="fly-panel" style="margin-bottom: 0;">
-      <form action="{{ url_for('index.post_search') }}" method="get" class="layui-form" style="text-align: center; padding-top: 30px">
+      <form action="{{ url_for('bbs_index.post_search') }}" method="get" class="layui-form" style="text-align: center; padding-top: 30px">
         <div class="layui-form-item">
           <div class="layui-inline">
-            <input type="text" name="kw" class="layui-input layui-input-inline" value="{{ kw }}" placeholder="请输入搜索关键字">
+            <input type="text" name="kw" class="layui-input layui-input-inline" style="width: 300px;" value="{{ kw }}" placeholder="请输入搜索关键字">
           </div>
           <div class="layui-inline">
             <button class="layui-btn">搜索</button>
@@ -47,7 +47,7 @@
           <div style="min-height: 60px; text-align: center; padding-top:50px; color: #999;">没有相关数据</div>
         {% endfor %}
       </ul>
-      {% if page.total_page > 1 %}
+      {% if page.total > 1 %}
         {% set url_prefix="/search/" %}
         {% set url_suffix=('?kw=' + kw) if kw else '' %}
         {{ pagination.paginate(page, url_prefix, url_suffix) }}

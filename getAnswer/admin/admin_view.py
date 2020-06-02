@@ -141,9 +141,9 @@ class PagesModelView(BaseModelView):
     form = PagesForm
 
 
-# 帖子种类管理
+# 问答回答管理
 class TopicsForm(form.Form):
-    name = fields.StringField('栏目名称')
+    name = fields.StringField('话题名称')
     sort_key = fields.IntegerField('排序', default=0)
     form_columns = ('name', 'sort_key')
 
@@ -201,7 +201,7 @@ class UsersModelView(BaseModelView):
 
 
 
-# 帖子表管理
+# 问答管理
 class PostsForm(form.Form):
     title = fields.StringField('标题', validators=[DataRequired('标题不能为空')])
     reward = fields.IntegerField('悬赏')

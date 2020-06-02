@@ -17,14 +17,13 @@
 </head>
 
 <body class="layui-layout-body">
-  <div class="layui-layout-admin">
     <div class="layui-header layui-bg-blue">
-      <div class="layui-logo">
+      <div class="layui-logo layui-bg-blue">
         <a class="logo" href="/">
           <img src="/static/images/logo.png" alt="汲识问答">
         </a></div>
       <!-- 头部区域（可配合layui已有的水平导航） -->
-      <ul class="layui-nav layui-layout-left">
+      <ul class="layui-nav layui-layout-left layui-bg-blue">
         <li class="layui-nav-item"><a href="/">首页</a></li>
         <li class="layui-nav-item"><a href="/add">提问</a></li>
         <li class="layui-nav-item"><a href="/topic">话题</a></li>
@@ -32,7 +31,7 @@
         <li class="layui-nav-item"><a href="/admin">后台管理</a></li>
         {% endif %}
       </ul>
-      <ul class="layui-nav layui-layout-right">
+      <ul class="layui-nav layui-layout-right layui-bg-blue">
         {% if current_user.is_authenticated %}
         <li class="layui-nav-item">
           <a class="fly-nav-avatar" href="javascript:;">
@@ -84,7 +83,6 @@
       <p>Power by Python Flask & layUI</p>
       <p>&copy; Copyright 2020 by<a href='http://106.14.139.48/' target='_blank'>汲识问答</a></p>
     </div>
-  </div>
   <script src="/static/layui/layui.js"></script>
   <script>
 

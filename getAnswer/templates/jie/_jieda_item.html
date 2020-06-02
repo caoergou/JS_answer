@@ -11,8 +11,8 @@
       </a>
       <div class="fly-detail-user">
         <a href="/user/{{ item_user._id}}" class="fly-link">
-          <cite>{{ item_user.username }}</cite>
-          {% if item_user.renzheng %}
+          <cite>{{ item_user.username or '无名'}}</cite>
+          {% if item_user.renzheng  %}
           <i class="iconfont icon-renzheng">{{ item_user.renzheng }}</i>
           {% endif %}
           {% if item_user.get('vip', 0) > 0 %}
@@ -32,7 +32,7 @@
       </div>
 
       <div class="detail-hits">
-        <a >{{ post.user.get('desc') or '这家伙懒得留下签名' }}</a>
+        <a >{{ item_user.get('desc') or '这家伙懒得留下签名' }}</a>
         <span>{{ item.create_at|mongo_date_str }}</span>
       </div>
       {% if item.is_adopted %}

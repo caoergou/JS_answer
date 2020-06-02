@@ -40,7 +40,7 @@ def index(pn=1, size=10, topic_id=None):
     # 排序字段和升降序，DESCENDING 的值是 -1 ，表示降序
     sort_by = (sort_key, DESCENDING)#元组，分别是排序字段和升降序的标志
     post_type = request.values.get('type')
-    user=current_user.user
+    # user=current_user.user
     filter1 = {}
     # 问答状态分类：not_closed 未结/已结；is_cream 精华帖
     if post_type == 'not_closed':
@@ -56,9 +56,9 @@ def index(pn=1, size=10, topic_id=None):
         page = get_page('posts', pn=pn, filter1=filter1, size=size, sort_by=sort_by)
         return render_template("/topic/topic_detail.html", is_index=topic_id is None,
             page=page, sort_key=sort_key, topic_id=topic_id,
-            post_type=post_type,user=user)
+            post_type=post_type)
     else:
-        return render_template("/topic/topic_square.html",is_index=True,user=user)
+        return render_template("/topic/topic_square.html",is_index=True)
 
 
 @topic_view.route('/add/', methods=['GET', 'POST'])

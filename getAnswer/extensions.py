@@ -70,8 +70,8 @@ def init_extensions(app):
     login_manager.init_app(app)
 
 	# # 使用 cache 可以加快web程序运行速度，即 采用缓存的方法以空间换时间
-    # if app.config.get('USE_CACHE', False):
-    #     cache.init_app(app, {})
+    if app.config.get('USE_CACHE', False):
+        cache.init_app(app, {})
     
 	# 获取配置信息并存储在 app 上
     configure_uploads(app, upload_photos)
@@ -82,7 +82,7 @@ def init_extensions(app):
     # 获取搜索服务的配置
     whoosh_searcher.init_app(app)
     # 使用 jieba 中文分词
-    chinese_analyzer = ChineseAnalyzer()
+    chinese_analyzer = ChineseAnalyzer()        
 	# 建立索引模式对象
     post_schema = Schema(obj_id=ID(unique=True, stored=True),
 			title=TEXT(stored=True, analyzer=chinese_analyzer),
@@ -98,9 +98,9 @@ def init_extensions(app):
                 '系统设置'))
         admin.add_view(admin_view.UsersModelView(mongo.db['users'], '用户管理'))
         admin.add_view(admin_view.TopicsModelView(mongo.db['topics'], 
-                '栏目管理', category='内容管理'))
+                '话题管理', category='内容管理'))
         admin.add_view(admin_view.PostsModelView(mongo.db['posts'], 
-                '帖子管理', category='内容管理'))
+                '问答管理', category='内容管理'))
         # admin.add_view(admin_view.IndexModelView(mongo.db['index_article'], 
         #         '主页文章管理', category='内容管理'))
         admin.add_view(admin_view.PassagewaysModelView(mongo.db['passageways'], 

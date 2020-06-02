@@ -12,6 +12,7 @@ from ..utils import gen_verify_num, verify_num
 from ..extensions import mongo,whoosh_searcher
 from ..db_utils import get_page, find_one
 from getAnswer.models import Page
+from whoosh import qparser, sorting
 # from 
 
 
