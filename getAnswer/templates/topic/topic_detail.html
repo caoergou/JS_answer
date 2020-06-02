@@ -32,7 +32,7 @@
     <hr>
     <div style="position: relative; margin: 5px 0 40px;">
         <div style="width:auto">
-            {% iif current_user.user and current_user.user['_id'] == admin['_id'] %}
+            {% if current_user.user and current_user.user['_id'] == admin['_id'] %}
             　　<div style="float:left;width:200px">
                 <span class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal"><a
                         href="/topic/edit/{{ topic._id }}">编辑话题</a></span>
