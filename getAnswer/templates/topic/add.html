@@ -51,9 +51,12 @@
             <div class="layui-input-block">
               <select lay-verify="required" name="parent_id">
                 <option></option>
+                {% set root = mongo_find_one('topics', {'name':'元话题'}) %}
                 {% for item in get_list('topics') %}
+                {% if item.parent_id == root['_id']  }
                 <option value="{{ item._id }}" {{ 'selected' if topic and topic['topic_id'] == item._id }}>
                   {{ item.name }}</option>
+                {% endif %}
                 {% endfor %}
 
               </select>

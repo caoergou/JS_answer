@@ -1,31 +1,20 @@
 import json
-
-
-from flask import Blueprint, render_template, jsonify, url_for, request,redirect
-from flask_login import current_user, login_required
-from bson import ObjectId
 from datetime import datetime
+from random import randint
+from bson import ObjectId
+from flask import (Blueprint, jsonify, redirect, render_template, request,
+                   session, url_for)
+from flask_login import current_user, login_required, login_user, logout_user
 from pymongo import DESCENDING
 
+from getAnswer.models import BaseResult, Page
 
-from .. import utils, db_utils, code_msg
-from ..forms import PostForm,TopicForm
-from ..models import R, BaseResult
-from ..utils import gen_verify_num, verify_num
-from ..extensions import mongo,whoosh_searcher
-from ..db_utils import get_page, find_one
-from getAnswer.models import Page
-
-
-from random import randint
-from flask import (Blueprint, render_template, request, jsonify, url_for, 
-        session, redirect)
-from flask_login import login_user, logout_user, login_required, current_user
-
+from .. import code_msg, db_utils, utils
+from ..db_utils import find_one, get_page
 from ..extensions import mongo
-
-from ..models import User
-from getAnswer.models import BaseResult
+from ..forms import PostForm, TopicForm
+from ..models import BaseResult, R, User
+from ..utils import gen_verify_num, verify_num
 
 # 创建蓝图，第一个参数为自定义，供前端使用，第二个参数为固定写法
 # 第三个参数为 URL 前缀

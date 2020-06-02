@@ -22,7 +22,7 @@
       {% else %}
       <span class="layui-badge-rim">未结</span>
       {% endif %}
-      <div class="fly-admin-box" data-id="{{ post._id }}">
+      <div class="fly-admin-box" data-id="{{ post._id }}" id="admin-box">
         {% if current_user.is_authenticated  and (post.user_id == current_user.user._id or
             current_user.user.is_admin) %}
         <span class="layui-btn layui-btn-xs jie-admin" type="del">删除</span>
@@ -43,7 +43,7 @@
         <span class="layui-btn layui-btn-xs jie-admin" type="set" field="is_cream" rank="1">加精</span>
         {% endif %}
         {% if current_user.is_authenticated and (post.user._id == current_user.user._id or current_user.user.is_admin) and not post.is_closed %}
-        <span class="layui-btn layui-btn-xs jie-admin" type="edit"><a style="text-decoration: none;color:#ffffff" href="/edit/{{ post._id }}">编辑此贴</a></span>
+        <span class="layui-btn layui-btn-xs jie-admin" type="edit" ><a style="text-decoration: none;color:#ffffff" href="/edit/{{ post._id }}">编辑此贴</a></span>
         {% endif %}
         {% endif %}
         {% endif %}

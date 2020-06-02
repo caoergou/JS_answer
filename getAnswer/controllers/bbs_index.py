@@ -1,17 +1,20 @@
-from flask import Blueprint, render_template, jsonify, url_for, request,redirect
-from flask_login import current_user, login_required
-from bson import ObjectId
 from datetime import datetime
+
+from bson import ObjectId
+from flask import (Blueprint, jsonify, redirect, render_template, request,
+                   url_for)
+from flask_login import current_user, login_required
 from pymongo import DESCENDING
 
+from getAnswer.models import Page
 
 from .. import code_msg
-from ..forms import PostForm,TopicForm
-from ..models import R, BaseResult
+from ..db_utils import find_one, get_page
+from ..extensions import mongo
+from ..forms import PostForm, TopicForm
+from ..models import BaseResult, R
 from ..utils import gen_verify_num, verify_num
-from ..extensions import mongo,whoosh_searcher
-from ..db_utils import get_page, find_one
-from getAnswer.models import Page
+
 # from 
 
 
@@ -131,56 +134,3 @@ def jump_comment(comment_id):
             pn += 1
     return redirect(url_for('bbs_index.post_detail', post_id=post_id, pn=pn
             ) + '#item-' + str(comment_id))
-
-@bbs_index.route('/refresh/indexes')
-def refresh_indexes():
-    name = request.values.get('name')
-    # 清除索引
-    whoosh_searcher.clear(name)
-    # 获取 IndexWriter 对象
-    writer = whoosh_searcher.get_writer(name)
-    for item in mongo.db[name].find({}, 
-                ['_id', 'title', 'content', 'create_at', 'user_id', 'topic_id']):
-        item['obj_id'] = str(item['_id'])
-        item['user_id'] = str(item['user_id'])
-        item['topic_id'] = str(item['topic_id'])
-        item.pop('_id')
-        writer.add_document(**item)
-    # 保存修改
-    writer.commit()
-    return ''
-
-@bbs_index.route('/search')
-@bbs_index.route('/search/page/<int:pn>/')
-def post_search(pn=1, size=10):
-    keyword = request.values.get('kw')
-    if keyword is None:
-        return render_template('search/list.html', 
-                message='搜索关键字不能为空!')
-    whoosh_searcher.clear('posts')
-    writer = whoosh_searcher.get_writer('posts')
-    for item in mongo.db['posts'].find({},
-            ['_id', 'title', 'content', 'create_at', 'user_id', 'topic_id']):
-        item['obj_id'] = str(item['_id'])
-        item['user_id'] = str(item['user_id'])
-        item['topic_id'] = str(item['topic_id'])
-        item.pop('_id')
-        writer.add_document(**item)
-    # 保存修改
-    writer.commit()
-    with whoosh_searcher.get_searcher('posts') as searcher:
-        # 解析查询字符串
-        parser = qparser.MultifieldParser(['title', 'content'],
-                whoosh_searcher.get_index('posts').schema)
-        q = parser.parse(keyword)
-        print('q:', q)
-        # 搜索得到结果
-        result = searcher.search_page(q, pagenum=pn, pagelen=size,
-                sortedby=sorting.ScoreFacet())
-        result_list = [x.fields() for x in result.results]
-        # 构建页面对象
-        page = Page(pn, size, result=result_list,
-                has_more=result.pagecount > pn, page_count=result.pagecount,
-                total=result.total)
-    return render_template('search/list.html', 
-            page=page, kw=keyword)

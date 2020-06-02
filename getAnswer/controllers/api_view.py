@@ -1,13 +1,14 @@
-from flask import (Blueprint, render_template, flash, current_app, jsonify,
-                   request, url_for, abort, redirect)
-from flask_login import login_required, current_user
-from bson import ObjectId
-from datetime import datetime
-from flask_uploads import UploadNotAllowed
-from ..extensions import mongo, upload_photos
-from .. import code_msg, models,db_utils
 import random
+from datetime import datetime
 
+from bson import ObjectId
+from flask import (Blueprint, abort, current_app, flash, jsonify, redirect,
+                   render_template, request, url_for)
+from flask_login import current_user, login_required
+from flask_uploads import UploadNotAllowed
+
+from .. import code_msg, db_utils, models
+from ..extensions import mongo, upload_photos
 
 api_view = Blueprint("api", __name__, url_prefix="", template_folder="templates")
 
@@ -23,8 +24,6 @@ def post_delete(post_id):
         return jsonify(code_msg.USER_UN_HAD_PERMISSION)
     # 删除帖子
     mongo.db.posts.delete_one({'_id': post_id})
-    # 删除帖子其他用户收藏夹中的 post_id
-    mongo.db.users.update_many({}, {'$pull': {'collections': post_id}})
     # 删除检索索引
     # whoosh_searcher.delete_document('posts', 'obj_id', str(post_id))
     return jsonify(
@@ -214,47 +213,47 @@ def reply_zan(comment_id):
     })
     return jsonify(models.R().ok())
 
-@api_view.route('/reply/putCoin/<ObjectId:comment_id>', methods=['POST'])
-@login_required
-def reply_putCoin(comment_id):
-    ok = request.values.get('ok')
-    tb_user_id = current_user.user['_id']
-    rc_user_id=mongo.db.comments.find_one({'_id':comment_id})['user_id']
-    # 在 'putCoin' 里查询当前用户的 user_id 是否在里面
-    res = mongo.db.comments.find_one({
-        '_id': comment_id,
-        'putCoin': {
-            '$elemMatch': {
-                '$eq': tb_user_id
-            }
-        }
-    })
-    if ok == 'false' and not res:
-        # 投币
-        action = '$push'
-        # 点赞后更新在 'putCoin' 里添加投币用户的 user_id，更新点赞数量 'coin_count'
-        mongo.db.comments.update_one({'_id': comment_id}, {
-            action: {
-                'putCoin': tb_user_id
-            },
-            '$inc': {
-                'coin_count': 2
-            }
-        })
-        # 还要减少投币人的硬币数量
-        mongo.db.users.update_one({'_id': tb_user_id}, {
-            '$inc': {
-                'coin_count': -2
-            }
-        })
-        mongo.db.users.update_one({'_id': rc_user_id}, {
-            '$inc': {
-                'coin_count': 2
-            }
-        })
-        remain_coin=mongo.db.users.find_one({'_id':tb_user_id})['coin']
-        return jsonify(models.R().ok().put('msg',"投币成功，剩余硬币数量："+str(remain_coin)+" 个"))
-    return jsonify(models.R().fail().put("msg","投币失败"))
+# @api_view.route('/reply/putCoin/<ObjectId:comment_id>', methods=['POST'])
+# @login_required
+# def reply_putCoin(comment_id):
+#     ok = request.values.get('ok')
+#     tb_user_id = current_user.user['_id']
+#     rc_user_id=mongo.db.comments.find_one({'_id':comment_id})['user_id']
+#     # 在 'putCoin' 里查询当前用户的 user_id 是否在里面
+#     res = mongo.db.comments.find_one({
+#         '_id': comment_id,
+#         'putCoin': {
+#             '$elemMatch': {
+#                 '$eq': tb_user_id
+#             }
+#         }
+#     })
+#     if ok == 'false' and not res:
+#         # 投币
+#         action = '$push'
+#         # 点赞后更新在 'putCoin' 里添加投币用户的 user_id，更新点赞数量 'coin_count'
+#         mongo.db.comments.update_one({'_id': comment_id}, {
+#             action: {
+#                 'putCoin': tb_user_id
+#             },
+#             '$inc': {
+#                 'coin_count': 2
+#             }
+#         })
+#         # 还要减少投币人的硬币数量
+#         mongo.db.users.update_one({'_id': tb_user_id}, {
+#             '$inc': {
+#                 'coin_count': -2
+#             }
+#         })
+#         mongo.db.users.update_one({'_id': rc_user_id}, {
+#             '$inc': {
+#                 'coin_count': 2
+#             }
+#         })
+#         remain_coin=mongo.db.users.find_one({'_id':tb_user_id})['coin']
+#         return jsonify(models.R().ok().put('msg',"投币成功，剩余硬币数量："+str(remain_coin)+" 个"))
+#     return jsonify(models.R().fail().put("msg","投币失败"))
 
 
 @api_view.route('/reply/update/<ObjectId:comment_id>', methods=['POST'])

@@ -14,10 +14,10 @@
     </ul>
     <div class="fly-column-right layui-hide-xs">
       <!-- <span class="fly-search"><i class="layui-icon"></i></span> -->
-      <a href="{{ url_for('bbs_index.add') }}" class="layui-btn">发表新帖</a>
+      <a href="{{ url_for('bbs_index.add') }}" class="layui-btn">提个问题</a>
     </div>
     <div class="layui-hide-sm layui-show-xs-block" style="margin-top: -10px; padding-bottom: 10px; text-align: center;">
-      <a href="{{ url_for('bbs_index.add') }}" class="layui-btn">发表新帖</a>
+      <a href="{{ url_for('bbs_index.add') }}" class="layui-btn">提个问题</a>
     </div>
   </div>
 </div>
@@ -60,7 +60,7 @@
       <dl class="fly-panel fly-list-one">
         <dt class="fly-panel-title">本周热议</dt>
         {% for item in get_list('posts', sort_by=('comment_count',-1), size=10, 
-            filter1={'create_at':{'$gte': date_cal(7, False)}}) %}
+            filter1={'created_at':{'$gte': date_cal(7, False)}}) %}
         <dd>
           <a href="/post/{{ item._id }}">{{ item.title }}</a>
           <span><i class="iconfont icon-pinglun1"></i> {{ item.get('comment_count', 0) }}</span>

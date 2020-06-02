@@ -1,1 +1,0 @@
-from .whoosh import WhooshSearcher

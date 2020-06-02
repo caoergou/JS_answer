@@ -1,4 +1,5 @@
-from flask import Blueprint, request,session,jsonify, url_for, current_app
+from flask import Blueprint, current_app, jsonify, request, session, url_for
+
 from ..models import GlobalApiException
 
 exception_view = Blueprint('exception', __name__)

@@ -33,7 +33,7 @@
     <i class="iconfont icon-shijian"></i><span>{{ user.get('create_at')|mongo_date_str or '时间保密 ' }} 加入</span>
     <i class="iconfont icon-chengshi"></i><span>来自{{ user.get('city') or '保密的火星' }}</span>
   </p>
-  <p class="fly-home-sign">({{ user.get('desc') or '这家伙懒得留下签名' }})</p>
+  <p class="fly-home-sign">{{ user.get('desc') or '这家伙懒得留下签名' }}</p>
 </div>
 <div class="layui-container">
   <div class="fly-panel">

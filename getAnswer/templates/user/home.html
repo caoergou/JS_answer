@@ -9,7 +9,7 @@
   <i class="iconfont icon-renzheng" title="社区认证"></i>
   {% endif %}
   <h1>
-    {{ user.username }}
+    <a>{{ user.username }}</a>
     {% if user.sex == '0' %}
     <i class="iconfont icon-nan"></i>
     {% else %}
@@ -33,13 +33,13 @@
     <i class="iconfont icon-shijian"></i><span>{{ user.get('create_at')|mongo_date_str or '时间保密 ' }} 加入</span>
     <i class="iconfont icon-chengshi"></i><span>来自{{ user.get('city') or '保密的火星' }}</span>
   </p>
-  <p class="fly-home-sign">({{ user.get('desc') or '这家伙懒得留下签名' }})</p>
+  <p class="fly-home-sign">{{ user.get('desc') or '这家伙懒得留下签名' }}</p>
 </div>
 <div class="layui-container">
   <div class="layui-row layui-col-space15">
     <div class="layui-col-md6 fly-home-jie">
       <div class="fly-panel">
-        <h3 class="fly-panel-title">{{ user.username }} 最近的帖子</h3>
+        <h3 class="fly-panel-title">{{ user.username }} 最近的提问</h3>
         <ul class="jie-row">
           {% for item in get_list('posts', size=10, sort_by=('_id', -1), filter1={'user_id': user._id}) %}
           <li>
@@ -59,7 +59,7 @@
     </div>
     <div class="layui-col-md6 fly-home-da">
       <div class="fly-panel">
-        <h3 class="fly-panel-title">{{ user.username }} 最近的回帖</h3>
+        <h3 class="fly-panel-title">{{ user.username }} 最近的回答</h3>
         <ul class="home-jieda">
           {% for item in get_list('comments', size=10, sort_by=('_id', -1), filter1={'user_id': user._id}) %}
           {% set item_post=mongo_find_one('posts', {'_id': item.post_id}) %}
