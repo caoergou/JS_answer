@@ -4,6 +4,7 @@ from .post_collection import post_collection
 from .api_view import api_view
 from .exception_view import exception_view
 from .topic_view import topic_view
+from .android_api import android
 
 # 蓝本默认配置
 DEFAULT_BLUEPRINT = (
@@ -14,6 +15,7 @@ DEFAULT_BLUEPRINT = (
     (api_view, '/api'),
     (exception_view, '/error'),
     (topic_view, '/topic'),
+    (android, '/android'),
 )
 
 
