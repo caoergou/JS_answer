@@ -86,36 +86,35 @@ def question(KEY_PAGE=1, size=5):
     if total - skip_count > 0:
         # 查找数据
         result =json_util.dumps(mongo.db['posts'].find(limit=size),ensure_ascii=False) 
+        if skip_count > 0:
+            result.skip(skip_count)
         t = json.loads(result)
         for i in t[:]:
             i['user'] = find_one('users', {'_id': i['user_id']['$oid']})
         # print(t)
         return json_util.dumps(t,ensure_ascii=False)
     else:
-        return None
+        return jsonify([])
 
 @android.route('/answer', methods=['post'])
 def answer(KEY_PAGE=1, size=5):
     question_id = request.values.get('id')
-    
-    print(question_id)
     # size = 5 if int(request.values.get('size')) else int(request.values.get('size'))
     size = size if size > 0 else 5     # 每页展示数量
     total = mongo.db['comments'].count(filter={'post_id':ObjectId(question_id)})    # 符合要求的数据的数量
-    
     skip_count = size * (KEY_PAGE - 1)        # 略过的数据的数量
-    print(total)
     result = []
     has_more = total > KEY_PAGE * size        # 布尔值，是否有更多数据待展示
     # if total - skip_count > 0:
         # 查找数据
     result =json_util.dumps(mongo.db['comments'].find(filter={'post_id': ObjectId(question_id)},limit=size),ensure_ascii=False) 
+    if skip_count > 0:
+        result.skip(skip_count)
     t = json.loads(result)
     for i in t[:]:
         i['user'] = find_one('users', {'_id': i['user_id']['$oid']})
     # for i in t[:]:
     #     i['user'] = find_one('users', {'_id': i['user_id']['$oid']})
-    print(t)
     return json_util.dumps(t,ensure_ascii=False)
     # # size = 5 if int(request.values.get('size')) else int(request.values.get('size'))
     # size = size if size > 0 else 5     # 每页展示数量
