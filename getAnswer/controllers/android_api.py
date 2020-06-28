@@ -75,26 +75,28 @@ def register():
     return jsonify(R.ok(msg="注册成功，请查看邮箱激活！",data=res_dict))
 
 @android.route('/question', methods=['post'])
-def question(KEY_PAGE=1, size=5):
+def question(KEY_PAGE=1, size=8):
     KEY_PAGE = int(request.values.get('KEY_PAGE'))
     # size = 5 if int(request.values.get('size')) else int(request.values.get('size'))
-    size = size if size > 0 else 5     # 每页展示数量
+    size = size if size > 0 else 8     # 每页展示数量
     total = mongo.db['posts'].count()    # 符合要求的数据的数量
     skip_count = size * (KEY_PAGE - 1)        # 略过的数据的数量
     result = []
     has_more = total > KEY_PAGE * size        # 布尔值，是否有更多数据待展示
     if total - skip_count > 0:
         # 查找数据
-        result =json_util.dumps(mongo.db['posts'].find(limit=size),ensure_ascii=False) 
+        result =mongo.db['posts'].find(limit=size)
         if skip_count > 0:
             result.skip(skip_count)
-        t = json.loads(result)
+        t = json.loads(json_util.dumps(result,ensure_ascii=False))
         for i in t[:]:
+            print(type(i))
+            print(type(i['user_id']))
             i['user'] = find_one('users', {'_id': i['user_id']['$oid']})
         # print(t)
         return json_util.dumps(t,ensure_ascii=False)
     else:
-        return jsonify([])
+        return jsonify(result)
 
 @android.route('/answer', methods=['post'])
 def answer(KEY_PAGE=1, size=5):
