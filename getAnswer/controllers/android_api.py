@@ -1,17 +1,22 @@
-from flask import (Blueprint, render_template, flash, current_app, jsonify,
-                   request, url_for, abort, redirect)
-from flask_login import login_required, current_user
-from bson import ObjectId
-from datetime import datetime
-from flask_uploads import UploadNotAllowed
-from ..extensions import mongo, upload_photos
-from .. import code_msg, models,db_utils
-from ..models import R
+import json
 import random
+from datetime import datetime
 from random import randint
-from werkzeug import generate_password_hash
-from getAnswer.controllers.user_view import send_active_email
 
+from bson import ObjectId, json_util
+from flask import (Blueprint, abort, current_app, flash, jsonify, redirect,
+                   render_template, request, url_for)
+from flask_login import current_user, login_required
+from flask_uploads import UploadNotAllowed
+from werkzeug import generate_password_hash
+
+from getAnswer.controllers.user_view import send_active_email
+from getAnswer.db_utils import find_one, get_page
+from getAnswer.models import Page
+
+from .. import code_msg, db_utils, models
+from ..extensions import mongo, upload_photos
+from ..models import R
 
 android = Blueprint("android", __name__, url_prefix="android")
 
@@ -69,6 +74,138 @@ def register():
     }
     return jsonify(R.ok(msg="注册成功，请查看邮箱激活！",data=res_dict))
 
+@android.route('/question', methods=['post'])
+def question(KEY_PAGE=1, size=5):
+    KEY_PAGE = int(request.values.get('KEY_PAGE'))
+    # size = 5 if int(request.values.get('size')) else int(request.values.get('size'))
+    size = size if size > 0 else 5     # 每页展示数量
+    total = mongo.db['posts'].count()    # 符合要求的数据的数量
+    skip_count = size * (KEY_PAGE - 1)        # 略过的数据的数量
+    result = []
+    has_more = total > KEY_PAGE * size        # 布尔值，是否有更多数据待展示
+    if total - skip_count > 0:
+        # 查找数据
+        result =json_util.dumps(mongo.db['posts'].find(limit=size),ensure_ascii=False) 
+        t = json.loads(result)
+        for i in t[:]:
+            i['user'] = find_one('users', {'_id': i['user_id']['$oid']})
+        # print(t)
+        return json_util.dumps(t,ensure_ascii=False)
+    else:
+        return None
+
+@android.route('/answer', methods=['post'])
+def answer(KEY_PAGE=1, size=5):
+    question_id = request.values.get('id')
+    
+    print(question_id)
+    # size = 5 if int(request.values.get('size')) else int(request.values.get('size'))
+    size = size if size > 0 else 5     # 每页展示数量
+    total = mongo.db['comments'].count(filter={'post_id':ObjectId(question_id)})    # 符合要求的数据的数量
+    
+    skip_count = size * (KEY_PAGE - 1)        # 略过的数据的数量
+    print(total)
+    result = []
+    has_more = total > KEY_PAGE * size        # 布尔值，是否有更多数据待展示
+    # if total - skip_count > 0:
+        # 查找数据
+    result =json_util.dumps(mongo.db['comments'].find(filter={'post_id': ObjectId(question_id)},limit=size),ensure_ascii=False) 
+    t = json.loads(result)
+    for i in t[:]:
+        i['user'] = find_one('users', {'_id': i['user_id']['$oid']})
+    # for i in t[:]:
+    #     i['user'] = find_one('users', {'_id': i['user_id']['$oid']})
+    print(t)
+    return json_util.dumps(t,ensure_ascii=False)
+    # # size = 5 if int(request.values.get('size')) else int(request.values.get('size'))
+    # size = size if size > 0 else 5     # 每页展示数量
+    # total = mongo.db['posts'].count()    # 符合要求的数据的数量
+    # skip_count = size * (KEY_PAGE - 1)        # 略过的数据的数量
+    # result = []
+    # has_more = total > KEY_PAGE * size        # 布尔值，是否有更多数据待展示
+    # if total - skip_count > 0:
+    #     # 查找数据
+    #     result =json_util.dumps(mongo.db['posts'].find(limit=size),ensure_ascii=False) 
+    #     t = json.loads(result)
+    #     for i in t[:]:
+    #         i['user'] = find_one('users', {'_id': i['user_id']['$oid']})
+    #     # print(t)
+    # return json_util.dumps(t,ensure_ascii=False)
+
+# @bbs_index.route('/post/<ObjectId:post_id>/')
+# @bbs_index.route('/post/<ObjectId:post_id>/page/<int:pn>/')
+# def post_detail(post_id, pn=1):
+#     '''帖子详情页的视图函数'''
+#     post = mongo.db.posts.find_one_or_404({'_id': post_id})
+#     # 当有人访问时，帖子浏览量 + 1
+#     if post:
+#         post['view_count'] = post.get('view_count', 0) + 1
+#         mongo.db.posts.save(post)
+#     post['user'] = find_one('users', {'_id': post['user_id']}) or {}
+#     # 获取评论
+#     page = get_page('comments', pn=pn, size=10,
+#             filter1={'post_id': post_id}, sort_by=('is_adopted', -1))
+#     return render_template('jie/detail.html', post=post, 
+#             page_name='jie', comment_page=page, topic_id=post['topic_id'])
+
+# @bbs_index.route('/comment/<ObjectId:comment_id>/')
+# def jump_comment(comment_id):
+#     comment = mongo.db.comments.find_one_or_404({'_id': comment_id})
+#     post_id = comment['post_id']
+#     pn = 1
+#     if not comment.get('is_adopted', False):
+#         comment_index = mongo.db.comments.count({'post_id': post_id,
+#                 '_id': {'$lt': comment_id}})
+#         pn = comment_index / 10
+#         if pn == 0 or pn % 10 != 0:
+#             pn += 1
+#     return redirect(url_for('bbs_index.post_detail', post_id=post_id, pn=pn
+#             ) + '#item-' + str(comment_id))
+
+# @bbs_index.route('/')
+# @bbs_index.route('/page/<int:pn>/size/<int:size>')#用来显示指定页数和回答数的页面
+# @bbs_index.route('/page/<int:pn>')#只传入了 pn 参数指定页数
+# def index(pn=1, size=10):
+#     sort_key = request.values.get('sort_key', '_id')
+#     # 排序字段和升降序，DESCENDING 的值是 -1 ，表示降序
+#     sort_by = (sort_key, DESCENDING)#元组，分别是排序字段和升降序的标志
+#     post_type = request.values.get('type')
+#     filter1 = {}
+#     # 问答状态分类：not_closed 未结/已结；is_cream 精华帖
+#     if post_type == 'not_closed':
+#         filter1['is_closed'] = {'$ne': True}
+#     if post_type == 'is_closed':
+#         filter1['is_closed'] = True
+#     if post_type == 'is_cream':
+#         filter1['is_cream'] = True
+#     page = get_page('posts', pn=pn, filter1=filter1, size=size, sort_by=sort_by)
+#     return render_template("post_list.html", 
+#             page=page, sort_key=sort_key, post_type=post_type)
+
+
+# def get_page(collection_name, pn=1, size=10, sort_by=None, filter1=None):
+#     _process_filter(filter1)
+#     size = size if size > 0 else 10     # 每页展示数量
+#     total = mongo.db[collection_name].count(filter1)    # 符合要求的数据的数量
+#     skip_count = size * (pn - 1)        # 略过的数据的数量
+#     result = []
+#     has_more = total > pn * size        # 布尔值，是否有更多数据待展示
+#     if total - skip_count > 0:
+#         # 查找数据
+#         result = mongo.db[collection_name].find(filter1, limit=size)
+#         # 排列数据
+#         if sort_by:
+#             result = result.sort(sort_by[0], sort_by[1])
+#         # 略过数据
+#         if skip_count > 0:
+#             result.skip(skip_count)
+#     # 计算总页数
+#     page_count = total // size
+#     if total % size > 0:
+#         page_count += 1
+#     page = Page(pn, size, sort_by, filter1, list(result), has_more,
+#             page_count, total)
+#     return page
 
 # @android.route('/post/delete/<ObjectId:post_id>', methods=['POST'])
 # @login_required
